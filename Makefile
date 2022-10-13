@@ -31,6 +31,7 @@ INCLUDES	:= include include/scenes include/data include/levels
 DATA		:=
 MUSIC		:=
 GRAPHICS    := gfx
+MAPS        := maps
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -75,7 +76,8 @@ export OUTPUT	:=	$(CURDIR)/$(TARGET)
 
 export VPATH	:=	$(foreach dir,$(SOURCES),$(CURDIR)/$(dir)) \
 			$(foreach dir,$(DATA),$(CURDIR)/$(dir)) \
-			$(foreach dir,$(GRAPHICS),$(CURDIR)/$(dir))
+			$(foreach dir,$(GRAPHICS),$(CURDIR)/$(dir)) \
+			$(foreach dir,$(MAPS),$(CURDIR)/$(dir))			
 
 export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 
@@ -84,6 +86,7 @@ CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
 BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
 PNGFILES    :=  $(foreach dir,$(GRAPHICS),$(notdir $(wildcard $(dir)/*.png)))
+MAPFILES    :=  $(foreach dir,$(MAPS),$(notdir $(wildcard $(dir)/*.maps)))
 
 ifneq ($(strip $(MUSIC)),)
 	export AUDIOFILES	:=	$(foreach dir,$(notdir $(wildcard $(MUSIC)/*.*)),$(CURDIR)/$(MUSIC)/$(dir))
@@ -104,13 +107,15 @@ else
 endif
 #---------------------------------------------------------------------------------
 
+export OFILES_MAPS := $(addsuffix .o,$(MAPFILES)) 
+
 export OFILES_BIN := $(addsuffix .o,$(BINFILES))
 
 export OFILES_SOURCES := $(CPPFILES:.cpp=.o) $(CFILES:.c=.o) $(SFILES:.s=.o)
 
-export OFILES := $(PNGFILES:.png=.o) $(OFILES_BIN) $(OFILES_SOURCES)
+export OFILES := $(OFILES_MAPS) $(PNGFILES:.png=.o) $(OFILES_BIN) $(OFILES_SOURCES)
 
-export HFILES := $(addsuffix .h,$(subst .,_,$(BINFILES)))
+export HFILES := $(addsuffix .h,$(subst .,_,$(BINFILES))) $(addsuffix .h,$(MAPFILES))
 
 export INCLUDE	:=	$(foreach dir,$(INCLUDES),-iquote $(CURDIR)/$(dir)) \
 					$(foreach dir,$(LIBDIRS),-I$(dir)/include) \
@@ -143,6 +148,13 @@ $(OUTPUT).gba	:	$(OUTPUT).elf
 $(OUTPUT).elf	:	$(OFILES)
 
 $(OFILES_SOURCES) : $(HFILES)
+
+
+%.maps.s %.maps.h  : %.maps
+	@echo $(notdir $<)
+	#touch  $(basename $(basename $@)).maps.h
+	#touch  $(basename $(basename $@)).maps.s
+	python ../tools/map_make.py $(CURDIR) $(basename $(basename $@))
 
 #---------------------------------------------------------------------------------
 %.s %.h	: %.png %.grit

@@ -13,6 +13,8 @@ using namespace Astralbrew::Entity;
 #include "player.hpp"
 #include "map.hpp"
 
+#include "map0.maps.h"
+
 static const u8 src[] {
 	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
 	2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
@@ -36,7 +38,7 @@ private:
 	bool auto_mode = false;
 	int framecnt = 0;
 	
-	MapSource map_source = {src, 44, 10};
+	MapSource map_source = map0;
 	Map* map;
 	MapViewer* viewer;
 	
@@ -57,8 +59,8 @@ public:
 			bgGetTilesPtr(3)[32+i]=0x2222;
 		}
 		
-		BG_PALETTE[1] = 0x001f;
-		BG_PALETTE[2] = 0x7fff;
+		BG_PALETTE[1] = Astralbrew::Drawing::Colors::White;
+		BG_PALETTE[2] = Astralbrew::Drawing::Colors::Blue;
 		
 		map = new Map(map_source);
 		viewer=new MapViewer(map, 3);				

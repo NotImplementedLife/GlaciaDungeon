@@ -7,12 +7,7 @@ using namespace Astralbrew::Memory;
 using namespace Astralbrew::World;
 using namespace Astralbrew;
 
-struct MapSource
-{
-	const u8* source;
-	int tiles_width;
-	int tiles_height;
-};
+#include "map_source.h"
 
 class Map
 {
