@@ -38,7 +38,7 @@ GRAPHICS    := gfx
 ARCH	:=	-mthumb -mthumb-interwork
 
 CFLAGS	:=	-g -Wall -O2\
-		-mcpu=arm7tdmi -mtune=arm7tdmi\
+		-mcpu=arm7tdmi -mtune=arm7tdmi -gdwarf-4\
 		$(ARCH)
 
 CFLAGS	+=	$(INCLUDE)
@@ -52,6 +52,7 @@ LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)
 # any extra libraries we wish to link with the project
 #---------------------------------------------------------------------------------
 ASTRAL_VERSION := ${shell ls "$(ASTRALBREW)/lib" | cut -d'.' -f1 | cut -d'-' -f3 | sort -r | head -n 1}
+
 LIBS	:= -lastralbrew-build-$(ASTRAL_VERSION) -lmm -lgba
 
 
