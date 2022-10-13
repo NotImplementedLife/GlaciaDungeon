@@ -30,7 +30,7 @@ class MainScene : public Scene
 {	
 private:
 	VramManager vram_chr_1 = VramManager::from_char_block(1);
-	VramManager vram_obj = VramManager::from_char_block(4);
+	VramManager vram_obj = VramManager(0x06011000, 0x7000, 200);
 	
 	Player* player;	
 	bool auto_mode = false;
@@ -61,18 +61,16 @@ public:
 		BG_PALETTE[2] = 0x7fff;
 		
 		map = new Map(map_source);
-		viewer=new MapViewer(map, 3);
+		viewer=new MapViewer(map, 3);				
 		
-				
-		
-		objEnable1D();		
-		
+		objEnable1D();				
 		
 		player = new Player();
 		
 		player->set_position(120-32, 110-32);
 		player->update_position(nullptr);
 		player->update_visual();				
+		player->get_attribute()->set_priority(0);
 	}
 	
 	bool scroll=false;
@@ -84,29 +82,41 @@ public:
 	
 	virtual void on_key_held(int keys) override
 	{
+		if(scroll) {
+			if(keys & KEY_LEFT)
+			{		
+				//viewer->set_scroll(viewer->scrollX-1, viewer->scrollY);				
+				viewer->scroll8x(-7);
+			}
+			else if(keys & KEY_RIGHT)
+			{		
+				//viewer->set_scroll(viewer->scrollX+1, viewer->scrollY);				
+				viewer->scroll8x(7);
+			}			
+			if(keys & KEY_UP)
+			{		
+				/*viewer->set_scroll(viewer->scrollX, viewer->scrollY-1);				
+				viewer->invalidate();*/
+				viewer->scroll8y(-7);
+			}
+			else if(keys & KEY_DOWN)
+			{		
+				//viewer->set_scroll(viewer->scrollX, viewer->scrollY+1);				
+				//viewer->invalidate();
+				viewer->scroll8y(7);
+			}
+						
+			bgUpdate();
+			
+			return;
+		}	
 			
 	}
 	
 	virtual void on_key_down(int keys) override
 	{
 		if(keys & KEY_L) scroll=true;		
-		
-		if(scroll) {
-			if(keys & KEY_LEFT)
-			{		
-				viewer->set_scroll(viewer->scrollX-1, viewer->scrollY);
-				viewer->invalidate();
-				bgUpdate();
-			}
-			else if(keys & KEY_RIGHT)
-			{		
-				viewer->set_scroll(viewer->scrollX+1, viewer->scrollY);
-				viewer->invalidate();
-				bgUpdate();
-			}
-			
-			return;
-		}	
+		if(scroll)return;		
 		
 		if(keys & KEY_START) auto_mode = !auto_mode;
 		if(auto_mode) return;
