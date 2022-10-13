@@ -42,7 +42,7 @@ public:
 
 class MapViewer
 {
-public:
+private:
 	const Map* map;
 	int map_id;
 	Address* map_address;
@@ -53,18 +53,21 @@ public:
 	int text_scroll_x = 0;
 	int text_scroll_y = 0;
 	
+	void set_scroll_crds(int x, int y);
+	
 	void scroll8x(int px);
-	void scroll8y(int py);
+	void scroll8y(int py);	
 		
-	void invalidate();
-	void set_scroll(int x, int y);
+	void invalidate();	
 public:
 	MapViewer(const Map* map, int map_id);
 	
 	void set_camera(Camera* cam);
 	Camera* get_camera() const;
 	
-	//void scroll(int dx, int dy);
+	void scroll(int dx, int dy);	
+	
+	void set_scroll(int x, int y);
 	
 	~MapViewer();
 };

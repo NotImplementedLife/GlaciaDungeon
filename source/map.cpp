@@ -36,7 +36,7 @@ MapViewer::MapViewer(const Map* map, int map_id) : map(map), map_id(map_id)
 	map_address = new Address();
 	map_address->set_value(bgGetMapPtr(map_id));
 	
-	set_scroll(120,80);
+	set_scroll_crds(120,80);
 	invalidate();
 }
 
@@ -57,6 +57,7 @@ Camera* MapViewer::get_camera() const
 
 void MapViewer::scroll8x(int px)
 {
+	//if(px==0) return;
 	px%=8;
 	
 	scrollX += px;	
@@ -87,6 +88,7 @@ void MapViewer::scroll8x(int px)
 
 void MapViewer::scroll8y(int py)
 {
+	//if(py==0) return;
 	py%=8;
 	
 	scrollY += py;	
@@ -118,9 +120,40 @@ void MapViewer::scroll8y(int py)
 	
 }
 
+int abs(int x) {return x>0?x:-x;}
+int sgn(int x) {return x>0?1:-1;}
 
+void MapViewer::scroll(int dx, int dy) {	
+	if(abs(dx)<8 && abs(dy)<8) 
+	{
+		scroll8x(dx);
+		scroll8y(dy);
+		return;
+	}
+	if(abs(dx)<=64 && abs(dy)<64) 
+	{
+		while(abs(dx)>7) 
+		{
+			scroll8x(sgn(dx)*7);
+			dx-=sgn(dx)*7;
+		}
+		scroll8x(dx);
+		
+		while(abs(dy)>7) 
+		{
+			scroll8y(sgn(dy)*7);
+			dy-=sgn(dy)*7;
+		}
+		scroll8y(dy);
+		
+		return;
+	}				
+	
+	set_scroll_crds(scrollX+dx, scrollY+dy);
+	invalidate();
+}
 
-void MapViewer::set_scroll(int x, int y)
+void MapViewer::set_scroll_crds(int x, int y)
 {
 	scrollX = x;
 	scrollY = y;
@@ -150,6 +183,11 @@ void MapViewer::invalidate()
 			row[(tileX+x)%32] = map->get_tile((left-7*(left<0))/8+x,(top-7*(top<0))/8+y);
 		}
 	}
+}
+
+void MapViewer::set_scroll(int x, int y)
+{
+	scroll(x-scrollX, y-scrollY);
 }
 
 MapViewer::~MapViewer()

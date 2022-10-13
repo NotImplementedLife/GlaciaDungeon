@@ -86,24 +86,24 @@ public:
 			if(keys & KEY_LEFT)
 			{		
 				//viewer->set_scroll(viewer->scrollX-1, viewer->scrollY);				
-				viewer->scroll8x(-7);
+				viewer->scroll(-10,0);
 			}
 			else if(keys & KEY_RIGHT)
 			{		
 				//viewer->set_scroll(viewer->scrollX+1, viewer->scrollY);				
-				viewer->scroll8x(7);
+				viewer->scroll(10,0);
 			}			
 			if(keys & KEY_UP)
 			{		
 				/*viewer->set_scroll(viewer->scrollX, viewer->scrollY-1);				
 				viewer->invalidate();*/
-				viewer->scroll8y(-7);
+				viewer->scroll(0,-7);
 			}
 			else if(keys & KEY_DOWN)
 			{		
 				//viewer->set_scroll(viewer->scrollX, viewer->scrollY+1);				
 				//viewer->invalidate();
-				viewer->scroll8y(7);
+				viewer->scroll(0,7);
 			}
 						
 			bgUpdate();
