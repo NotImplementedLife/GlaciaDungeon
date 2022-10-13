@@ -32,38 +32,23 @@ public:
 	int get_tile(int tx, int ty) const;
 };
 
-class Rectangle
-{
-public:
-	int left, top, width, height;
-	Rectangle();
-	Rectangle(int left, int top, int width, int height);		
-};
-
 class MapViewer
 {
 private:
 	const Map* map;
 	int map_id;
-	Address* map_address;
-	Camera* camera = nullptr;		
+	Address* map_address;		
 	
-	int scrollX = SHRT_MIN, scrollY = SHRT_MIN;
-	
-	int text_scroll_x = 0;
-	int text_scroll_y = 0;
+	int scrollX = SHRT_MIN, scrollY = SHRT_MIN;	
 	
 	void set_scroll_crds(int x, int y);
 	
 	void scroll8x(int px);
 	void scroll8y(int py);	
 		
-	void invalidate();	
+	void invalidate();
 public:
-	MapViewer(const Map* map, int map_id);
-	
-	void set_camera(Camera* cam);
-	Camera* get_camera() const;
+	MapViewer(const Map* map, int map_id);	
 	
 	void scroll(int dx, int dy);	
 	

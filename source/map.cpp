@@ -24,12 +24,6 @@ int Map::get_tile(int tx, int ty) const
 	return map_source.source[ty * map_source.tiles_width + tx];
 }
 
-
-Rectangle::Rectangle(int left, int top, int width, int height)
-	:left(left), top(top), width(width), height(height) {}
-	
-Rectangle::Rectangle() : Rectangle(0,0,0,0) {}
-
 	
 MapViewer::MapViewer(const Map* map, int map_id) : map(map), map_id(map_id)
 {
@@ -39,21 +33,6 @@ MapViewer::MapViewer(const Map* map, int map_id) : map(map), map_id(map_id)
 	set_scroll_crds(120,80);
 	invalidate();
 }
-
-void MapViewer::set_camera(Camera* cam)
-{
-	camera = cam;
-}
-
-Camera* MapViewer::get_camera() const
-{
-	return camera;
-}
-
-/*void MapViewer::scroll(int dx, int dy)
-{
-	
-}*/
 
 void MapViewer::scroll8x(int px)
 {
