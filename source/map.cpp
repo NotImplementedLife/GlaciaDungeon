@@ -54,8 +54,8 @@ void MapViewer::scroll8x(int px)
 	
 	u16* mptr = (u16*)map_address->get_value();
 	
-	int x0 = (px>=0)?31:0;
-	int x1 = (px>=0)?30:1;	
+	int x0 = (px>=0)?30:0;
+	int x1 = (px>=0)?29:1;
 	
 	for(int y=0;y<23;y++) 
 	{
@@ -109,7 +109,7 @@ void MapViewer::scroll(int dx, int dy) {
 		scroll8y(dy);
 		return;
 	}
-	if(abs(dx)<=64 && abs(dy)<64) 
+	if(abs(dx)<=64 && abs(dy)<=64) 
 	{
 		while(abs(dx)>7) 
 		{

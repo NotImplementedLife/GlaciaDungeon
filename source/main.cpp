@@ -42,6 +42,8 @@ private:
 	Map* map;
 	MapViewer* viewer;
 	
+	
+	Camera camera;
 public:	
 	virtual void init() override
 	{
@@ -69,10 +71,12 @@ public:
 		
 		player = new Player();
 		
-		player->set_position(120-32, 110-32);
-		player->update_position(nullptr);
+		player->set_position(120,80);
+		player->update_position(&camera);
 		player->update_visual();				
 		player->get_attribute()->set_priority(0);
+		
+		camera.follow(player);
 	}
 	
 	bool scroll=false;
@@ -86,26 +90,20 @@ public:
 	{
 		if(scroll) {
 			if(keys & KEY_LEFT)
-			{		
-				//viewer->set_scroll(viewer->scrollX-1, viewer->scrollY);				
-				viewer->scroll(-10,0);
+			{										
+				player->move(-10,0);
 			}
 			else if(keys & KEY_RIGHT)
-			{		
-				//viewer->set_scroll(viewer->scrollX+1, viewer->scrollY);				
-				viewer->scroll(10,0);
+			{
+				player->move(10,0);
 			}			
 			if(keys & KEY_UP)
-			{		
-				/*viewer->set_scroll(viewer->scrollX, viewer->scrollY-1);				
-				viewer->invalidate();*/
-				viewer->scroll(0,-7);
+			{						
+				player->move(0,-10);
 			}
 			else if(keys & KEY_DOWN)
-			{		
-				//viewer->set_scroll(viewer->scrollX, viewer->scrollY+1);				
-				//viewer->invalidate();
-				viewer->scroll(0,7);
+			{						
+				player->move(0,10);
 			}
 						
 			bgUpdate();
@@ -161,9 +159,11 @@ public:
 		{
 			int pos_index = player->get_pos_index();
 			int orientation = player->get_orientation();			
-			player->set_current_frame((orientation+1)%4, (pos_index+1)%7);
-			
+			player->set_current_frame((orientation+1)%4, (pos_index+1)%7);			
 		}
+		
+		viewer->set_scroll(camera.get_x(), camera.get_y());
+		player->update_position(&camera);
 		framecnt++;
 		OamPool::deploy();
 	}

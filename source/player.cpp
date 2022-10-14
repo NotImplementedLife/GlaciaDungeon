@@ -2,6 +2,8 @@
 
 #include "player_sheet.h"
 
+
+
 Player::Player() : Sprite(ObjSize::SIZE_64x64, ObjBitDepth::_8bit, 1, $(player))
 {
 	dmaCopy(player_sheetPal, SPRITE_PALETTE, player_sheetPalLen);	
@@ -20,6 +22,19 @@ void Player::set_current_frame(int orientation, int pos_index)
 	
 	u8* src = ((u8*)player_sheetTiles) + 64*64*(7*orientation + pos_index);
 	gfx_addr.write(src, 64*64);
+}
+
+void Player::move(sf24 dx, sf24 dy)
+{
+	px+=dx;
+	py+=dy;
+	set_position(px,py);
+		
+}
+
+void Player::update_movement()
+{
+	
 }
 
 
