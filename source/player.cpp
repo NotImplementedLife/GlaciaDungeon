@@ -13,6 +13,9 @@ Player::Player() : Sprite(ObjSize::SIZE_64x64, ObjBitDepth::_8bit, 1, $(player))
 	get_visual()->set_frame(0, &gfx_addr);
 	get_visual()->set_crt_gfx(0);
 	set_anchor(32, 32);
+	
+	px = 120;
+	py = 80;
 }
 
 void Player::set_current_frame(int orientation, int pos_index)
@@ -26,10 +29,8 @@ void Player::set_current_frame(int orientation, int pos_index)
 
 void Player::move(sf24 dx, sf24 dy)
 {
-	px+=dx;
-	py+=dy;
-	set_position(px,py);
-		
+	ax=dx; 
+	ay=dy;
 }
 
 

@@ -30,6 +30,9 @@ private:
 	int crt_frame_index = 0;
 	int cooldown = 50;
 	int crt_cooldown = 0;
+	
+	sf24 vx = 0, vy = 0;
+	sf24 ax = 0, ay = 0;
 public:
 	Player();
 	
@@ -40,8 +43,35 @@ public:
 	
 	void move(sf24 dx, sf24 dy);
 	
+	sf24 to_0(sf24 val, sf24 amount) {
+		if(amount<0) amount=-amount;
+		if(val<0) {
+			val+=amount;
+			if(val>0) val=0;
+		}
+		else if(val>0){
+			val-=amount;
+			if(val<0) val=0;
+		}
+		return val;
+	}
+	
 	void update()
-	{				
+	{	
+		vx+=ax;
+		vy+=ay;
+		px+=vx;
+		py+=vy;	
+		
+		vx = to_0(vx, sf24(0,5));
+		vy = to_0(vy, sf24(0,5));
+		
+		ax = to_0(ax, ax*sf24(0,128));
+		ay = to_0(ay, ay*sf24(0,128));
+		
+				
+		set_position(px,py);
+	
 		if(crt_cooldown>0) {
 			crt_cooldown++;
 			if(crt_cooldown>=cooldown) 

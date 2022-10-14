@@ -77,80 +77,37 @@ public:
 		player->get_attribute()->set_priority(0);
 		
 		camera.follow(player);
-	}
-	
-	bool scroll=false;
+	}	
 	
 	virtual void on_key_up(int keys) override
-	{
-		if(keys & KEY_L) scroll=false;
+	{		
 	}
 	
 	virtual void on_key_held(int keys) override
-	{
-		if(scroll) {
-			if(keys & KEY_LEFT)
-			{										
-				player->move(-10,0);
-			}
-			else if(keys & KEY_RIGHT)
-			{
-				player->move(10,0);
-			}			
-			if(keys & KEY_UP)
-			{						
-				player->move(0,-10);
-			}
-			else if(keys & KEY_DOWN)
-			{						
-				player->move(0,10);
-			}
-						
-			bgUpdate();
-			
-			return;
-		}	
-			
+	{		
+		if(keys & KEY_LEFT)
+		{										
+			player->move(-sf24(0,32),0);
+		}
+		else if(keys & KEY_RIGHT)
+		{
+			player->move(sf24(0,32),0);
+		}			
+		if(keys & KEY_UP)
+		{						
+			player->move(0,-sf24(0,32));
+		}
+		else if(keys & KEY_DOWN)
+		{						
+			player->move(0,sf24(0,32));
+		}
+					
+		bgUpdate();										
 	}
 	
 	virtual void on_key_down(int keys) override
-	{
-		if(keys & KEY_L) scroll=true;		
-		if(scroll)return;		
-		
-		if(keys & KEY_START) auto_mode = !auto_mode;
-		if(auto_mode) return;
-		int pos_index = player->get_pos_index();
-		int orientation = player->get_orientation();
-		if(keys & KEY_LEFT)
-		{		
-			if(pos_index > 0)
-			{
-				player->set_current_frame(orientation, pos_index-1);
-			}			
-		}		
-		else if(keys & KEY_RIGHT)
-		{
-			if(pos_index < 6)
-			{
-				player->set_current_frame(orientation, pos_index+1);
-			}
-		}
-		
-		if(keys & KEY_UP)
-		{		
-			if(orientation > 0)
-			{
-				player->set_current_frame(orientation-1, pos_index);
-			}			
-		}		
-		else if(keys & KEY_DOWN)
-		{
-			if(orientation < 3)
-			{
-				player->set_current_frame(orientation+1, pos_index);
-			}
-		}
+	{		
+				
 	}
 	
 	virtual void frame() override
