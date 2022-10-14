@@ -31,6 +31,28 @@ void Player::move(sf24 dx, sf24 dy)
 {
 	ax=dx; 
 	ay=dy;
+	
+	if(dx<0) 
+	{
+		set_current_frame(PLAYER_LEFT, pos_index);					
+		return;
+	}		
+	if(dx>0) 
+	{
+		set_current_frame(PLAYER_RIGHT, pos_index);					
+		return;
+	}			
+	if(dy<0)
+	{
+		set_current_frame(PLAYER_BACK, pos_index);					
+		return;		
+	}		
+	if(dy>0)
+	{
+		set_current_frame(PLAYER_FRONT, pos_index);
+		return;		
+	}		
+		
 }
 
 
