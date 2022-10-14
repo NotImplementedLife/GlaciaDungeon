@@ -19,6 +19,17 @@ private:
 	Address gfx_addr;
 	int orientation, pos_index;
 	sf24 px=0, py=0;
+	
+	static constexpr int frames_standby[] {0, 1};
+	static constexpr int frames_start_skate[] {1, 2};
+	static constexpr int frames_normal_skate[] {3, 2, 4, 2};
+	static constexpr int frames_rage_skate[] {5,6};
+	
+	const int* crt_frames = frames_standby;
+	int crt_frames_len = 2;
+	int crt_frame_index = 0;
+	int cooldown = 50;
+	int crt_cooldown = 0;
 public:
 	Player();
 	
@@ -29,7 +40,21 @@ public:
 	
 	void move(sf24 dx, sf24 dy);
 	
-	void update_movement();
+	void update()
+	{				
+		if(crt_cooldown>0) {
+			crt_cooldown++;
+			if(crt_cooldown>=cooldown) 
+				crt_cooldown=0;
+			return;
+		}
+		crt_cooldown++;
+		set_current_frame(orientation, crt_frames[crt_frame_index]);
+		
+		crt_frame_index++;
+		if(crt_frame_index>=crt_frames_len) 
+			crt_frame_index = 0;		
+	}
 	
 	~Player() = default;
 	

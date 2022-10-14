@@ -32,11 +32,6 @@ void Player::move(sf24 dx, sf24 dy)
 		
 }
 
-void Player::update_movement()
-{
-	
-}
-
 
 const int PLAYER_FRONT = 0;
 const int PLAYER_BACK  = 1;

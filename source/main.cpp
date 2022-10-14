@@ -163,6 +163,7 @@ public:
 		}
 		
 		viewer->set_scroll(camera.get_x(), camera.get_y());
+		player->update();
 		player->update_position(&camera);
 		framecnt++;
 		OamPool::deploy();
