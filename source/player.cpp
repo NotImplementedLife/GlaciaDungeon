@@ -11,11 +11,20 @@ Player::Player() : Sprite(ObjSize::SIZE_64x64, ObjBitDepth::_8bit, 1, $(player))
 	set_current_frame(0,0);	
 	
 	get_visual()->set_frame(0, &gfx_addr);
-	get_visual()->set_crt_gfx(0);
-	set_anchor(32, 32);
+	get_visual()->set_crt_gfx(0);	
+	set_anchor(32,32);
+	//set_anchor(ANCHOR_CENTER);
 	
 	px = 120;
 	py = 80;
+}
+
+void Player::set_movement_bounds(int x, int y, int w, int h)
+{
+	bndx = x;
+	bndy = y;
+	bndw = w;
+	bndh = h;
 }
 
 void Player::set_current_frame(int orientation, int pos_index)
@@ -27,32 +36,42 @@ void Player::set_current_frame(int orientation, int pos_index)
 	gfx_addr.write(src, 64*64);
 }
 
+#include <stdio.h>
+
 void Player::move(sf24 dx, sf24 dy)
 {
 	ax=dx; 
 	ay=dy;	
+	
+	//printf("%s %s %s\n",vx.to_string(), vy.to_string(), vx.abs().to_string());
 	
 	if(vx==0 && vy==0)
 		crt_frames = frames_start_skate;
 	
 	if(dx<0) 
 	{
-		set_current_frame(PLAYER_LEFT, pos_index);					
+		if(vx.abs()>vy.abs())
+		{			
+			set_current_frame(PLAYER_LEFT, pos_index);										
+		}
 		return;
 	}		
 	if(dx>0) 
-	{
-		set_current_frame(PLAYER_RIGHT, pos_index);					
+	{	
+		if(vx.abs()>vy.abs())
+			set_current_frame(PLAYER_RIGHT, pos_index);					
 		return;
 	}			
 	if(dy<0)
 	{
-		set_current_frame(PLAYER_BACK, pos_index);					
+		if(vy.abs()>vx.abs())
+			set_current_frame(PLAYER_BACK, pos_index);					
 		return;		
 	}		
 	if(dy>0)
 	{
-		set_current_frame(PLAYER_FRONT, pos_index);
+		if(vy.abs()>vx.abs())
+			set_current_frame(PLAYER_FRONT, pos_index);
 		return;		
 	}					
 }
@@ -97,7 +116,7 @@ void Player::frameset_start()
 	crt_frames = frames_start_skate;
 	crt_frames_len = 2;
 	crt_frame_index = 0;	
-	cooldown = 3;
+	cooldown = 10;
 	crt_cooldown = 0;	
 }
 
@@ -119,6 +138,24 @@ void Player::update()
 	px+=vx;
 	py+=vy;	
 	
+	if(px<bndx) 
+	{
+		px=bndx, vx=0;
+	}
+	else if(px>=bndx+bndw)
+	{
+		px = bndx+bndw-1, vx=0;
+	}
+	
+	if(py<bndy) 
+	{
+		py=bndy, vy=0;
+	}
+	else if(py>=bndy+bndh)
+	{
+		py = bndy+bndh-1, vy=0;
+	}	
+	
 	vx = to_0(vx, sf24(0,5));
 	vy = to_0(vy, sf24(0,5));
 	
@@ -127,13 +164,18 @@ void Player::update()
 	
 	const sf24 almost_stop_speed(0,130);
 		
-	if((vx<-almost_stop_speed || vx>almost_stop_speed) || (vy<-almost_stop_speed || vy>almost_stop_speed)) {
-		frameset_normal();				
+	if((vx.abs()>almost_stop_speed) || (vy.abs()>almost_stop_speed)) {
+		frameset_normal();
 	}
-	else 
+	else if(vx==0 && vy==0)
 	{
 		frameset_standby();
 	}
+	else 
+	{
+		frameset_start();
+	}	
+	
 	
 			
 	set_position(px,py);

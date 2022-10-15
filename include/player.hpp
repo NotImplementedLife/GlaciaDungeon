@@ -33,8 +33,12 @@ private:
 	
 	sf24 vx = 0, vy = 0;
 	sf24 ax = 0, ay = 0;
+	
+	int bndx=0, bndy=0, bndw=100, bndh=100;
 public:
 	Player();
+	
+	void set_movement_bounds(int x, int y, int w, int h);
 	
 	void set_current_frame(int orientation, int pos_index);
 	

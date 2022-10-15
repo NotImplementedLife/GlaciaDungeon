@@ -48,6 +48,7 @@ public:
 	virtual void init() override
 	{	
 		Video::setMode(0);		
+		consoleDemoInit();
 		
 		bgInit(3, BgSize::Text256x256 , BgPaletteType::Pal4bit, 1, 1);
 		
@@ -69,9 +70,13 @@ public:
 		player->set_position(120,80);
 		player->update_position(&camera);
 		player->update_visual();				
-		player->get_attribute()->set_priority(0);
+		player->get_attribute()->set_priority(0);		
 		
 		camera.follow(player);		
+				
+		player->set_movement_bounds(0,0,map->px_width(), map->px_height());
+		
+		camera.set_bounds(map->px_width(), map->px_height());
 	}	
 	
 	virtual void on_key_up(int keys) override
