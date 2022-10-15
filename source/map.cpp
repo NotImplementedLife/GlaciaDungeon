@@ -11,8 +11,19 @@ int Map::operator() (int x, int y) const
 {	
 	if(x<0 || y<0 || x>=8*map_source.tiles_width || y>=8*map_source.tiles_height)
 		return 0;
+	int px = x%8;
+	int py = y%8;
 	x/=8;
 	y/=8;
+	switch(map_source.source[y * map_source.tiles_width + x])
+	{
+		case 0: return 0;
+		case 1: return 1;
+		case 2: return px+py<=7;
+		case 3: return px>=py;
+		case 4: return px<=py;
+		case 5: return px+py>=7;
+	}
 	return map_source.source[y * map_source.tiles_width + x];
 }
 	
@@ -21,6 +32,9 @@ int Map::get_tile(int tx, int ty) const
 {
 	if(tx<0 || ty<0 || tx>=map_source.tiles_width || ty>=map_source.tiles_height)
 		return 0;
+	if(map_source.source[ty * map_source.tiles_width + tx]==0) {
+		return 0;
+	}
 	return map_source.source[ty * map_source.tiles_width + tx]+2;
 }
 

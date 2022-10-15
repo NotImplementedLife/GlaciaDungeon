@@ -17,6 +17,7 @@ using namespace Astralbrew::Entity;
 #include "map1.maps.h"
 
 #include "ice_tiles.h"
+#include "ice_floor.h"
 
 class MainScene : public Scene
 {	
@@ -39,24 +40,41 @@ public:
 	virtual void init() override
 	{	
 		Video::setMode(0);		
-		consoleDemoInit();
+		//consoleDemoInit();
 		
-		bgInit(3, BgSize::Text256x256 , BgPaletteType::Pal4bit, 1, 1);
+		bgInit(1, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 2);
+		bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 1, 1);
+		
+		bgSetPriority(1, 3);
+		bgSetPriority(3, 2);
 		
 		Address transparentTile;
 		vram_chr_1.reserve(&transparentTile, 32);
 		
 		vram_chr_1.reserve(&ice_tiles, ice_tilesTilesLen);
 		ice_tiles.write(ice_tilesTiles, ice_tilesTilesLen);
+				
+		dmaCopy(ice_tilesPal, BG_PALETTE, (ice_tilesPalLen+3)/4*4);
+		
+		dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, ice_floorTilesLen-32);
+		dmaCopy(ice_floorMap, bgGetMapPtr(1), ice_floorMapLen);
+		dmaCopy(ice_floorPal, &BG_PALETTE[128], ice_floorPalLen);
+				
+		for(int i=0;i<1024;i++)
+		{
+			bgGetMapPtr(1)[i]&=0x0FFF;
+			bgGetMapPtr(1)[i]|=0x8000;			
+		}
+		
+		
 		
 		//for(int i=0;i<16;i++) {
 			//bgGetTilesPtr(3)[16+i]=0x1111;
 			//bgGetTilesPtr(3)[32+i]=0x2222;
-		//}
-
-		dmaCopy(ice_tilesPal, BG_PALETTE, ice_tilesPalLen);
+		//}		
 			
-		BG_PALETTE[0] = Astralbrew::Drawing::Colors::Black;
+		BG_PALETTE[0] = Astralbrew::Drawing::Colors::White;
+		BG_PALETTE[1] = Astralbrew::Drawing::Colors::Black;
 		//BG_PALETTE[2] = Astralbrew::Drawing::Colors::Blue;
 		
 		map = new Map(map_source);
@@ -99,8 +117,7 @@ public:
 		else if(keys & KEY_DOWN)
 		{						
 			player->move(0,sf24(0,32));
-		}
-		bgUpdate();								
+		}				
 	}
 	
 	virtual void on_key_down(int keys) override
@@ -116,10 +133,20 @@ public:
 			int orientation = player->get_orientation();			
 			player->set_current_frame((orientation+1)%4, (pos_index+1)%7);			
 		}
-		
-		viewer->set_scroll(camera.get_x(), camera.get_y());
+				
 		player->update();
-		player->update_position(&camera);
+		player->update_position(&camera);				
+		
+		viewer->set_scroll(camera.get_x(), camera.get_y());		
+		bgSetScroll(1, camera.get_x() & 0xFF, camera.get_y() & 0xFF);
+		bgUpdate();								
+		
+		if(!player->check_feet(map))
+		{
+			printf("Game over");
+			//FATAL_ERROR("Game over");
+		}
+		
 		framecnt++;
 		OamPool::deploy();
 	}

@@ -1,5 +1,6 @@
 #pragma once
 #include <Astralbrew>
+#include "map.hpp"
 
 using namespace Astralbrew;
 using namespace Astralbrew::Entity;
@@ -35,6 +36,9 @@ private:
 	sf24 ax = 0, ay = 0;
 	
 	int bndx=0, bndy=0, bndw=100, bndh=100;
+	
+	int feetx[2];
+	int feety[2];
 public:
 	Player();
 	
@@ -45,20 +49,7 @@ public:
 	inline int get_orientation() const { return orientation; }
 	inline int get_pos_index() const { return pos_index; }
 	
-	void move(sf24 dx, sf24 dy);
-	
-	sf24 to_0(sf24 val, sf24 amount) {
-		if(amount<0) amount=-amount;
-		if(val<0) {
-			val+=amount;
-			if(val>0) val=0;
-		}
-		else if(val>0){
-			val-=amount;
-			if(val<0) val=0;
-		}
-		return val;
-	}
+	void move(sf24 dx, sf24 dy);	
 	
 	void frameset_standby() ;	
 	
@@ -70,6 +61,11 @@ public:
 	
 	void update();
 	
+	bool check_feet(const Map* map) const;
+	
 	~Player() = default;
+	
+	inline int get_px() const {return (s16)px;}
+	inline int get_py() const {return (s16)py;}
 	
 };
