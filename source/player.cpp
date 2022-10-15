@@ -109,9 +109,7 @@ void Player::move(sf24 dx, sf24 dy)
 {
 	if(falling_scale>0) return;
 	ax=dx; 
-	ay=dy;	
-	
-	//printf("%s %s %s\n",vx.to_string(), vy.to_string(), vx.abs().to_string());
+	ay=dy;		
 	
 	if(vx==0 && vy==0)
 		crt_frames = frames_start_skate;
@@ -218,10 +216,12 @@ bool Player::check_feet(const Map* map)
 #include <gba_console.h>
 
 void Player::update()
-{		
+{			
 	if(falling_scale)
 	{						
 		ax = ay = 0;				
+		//vx = 0;
+		//vy = 0;
 		if(falling_scale<1024)
 		{
 			falling_scale=falling_scale*50;		
@@ -233,16 +233,19 @@ void Player::update()
 			fell = true;
 		}			
 	}
+	else {
+		//printf("\e[1;1H\e[2Jvx=%s\nvy=%s", vx.to_string(), vy.to_string());
+	}
 	vx+=ax;
-	vy+=ay;	
+	vy+=ay;		
 	
 	px+=vx;
 	py+=vy;
 
 	if(falling_scale)
 	{
-		vx = vx*sf24(0,128);
-		vy = vy*sf24(0,128);		
+		vx = vx*sf24(0,250);
+		vy = vy*sf24(0,250);
 	}	
 	
 	if(px<bndx) 
@@ -321,13 +324,34 @@ void Player::enable_falling()
 	*attr0|=(1<<8);	
 	*attr0&=~(1<<9);
 		
-	*attr1&=~(31<<9);	
+	*attr1&=~(31<<9);		
 	
-	vx = vy = 0;
-	if(orientation==PLAYER_FRONT) vy = sf24(12,0);
-	else if(orientation==PLAYER_BACK) vy = -sf24(6,0);
-	else if(orientation==PLAYER_LEFT) vx = -sf24(6,0);
-	else if(orientation==PLAYER_RIGHT) vx = sf24(12,0);
+	//sf24 v = vx*vx+vy*vy;
+	
+	if(vx<0 && vy.abs()<=vx.abs()*sf24(0,64)) 
+	{
+		vx = -sf24(0, 160);
+		vy=0;
+	}
+	else if(vx>0 && vy.abs()<=vx.abs()*sf24(0,64)) 
+	{
+		vx = sf24(0, 160);
+		vy=0;
+	}
+	else if(vy<0 && vx.abs()<=vy.abs()*sf24(0,64)) 
+	{
+		vy = sf24(0,100);
+		vx=0;
+	}
+	else if(vy>0 && vx.abs()<=vy.abs()*sf24(0,64)) 
+	{
+		vy = sf24(1, 89);
+		vx=0;
+	}		
+	else if(orientation==PLAYER_FRONT) vy = sf24(1,128), vx=0;
+	else if(orientation==PLAYER_BACK) vy = -sf24(1,0), vx=0;
+	else if(orientation==PLAYER_LEFT) vx = -sf24(1,0), vy=0;
+	else if(orientation==PLAYER_RIGHT) vx = sf24(1,128), vy=0;
 	
 }
 
