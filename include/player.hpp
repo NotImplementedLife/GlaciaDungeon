@@ -43,6 +43,8 @@ private:
 	int falling_scale = 0;	
 	int fall_x = 0;
 	int fall_y = 0;
+	
+	bool fell = false;
 public:
 	Player();
 	
@@ -73,5 +75,7 @@ public:
 	inline int get_py() const {return (s16)py;}
 	
 	void enable_falling();
+	
+	inline bool has_fallen() const {return fell;}
 	
 };

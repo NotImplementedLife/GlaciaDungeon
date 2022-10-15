@@ -25,9 +25,7 @@ private:
 	VramManager vram_chr_1 = VramManager::from_char_block(1);
 	VramManager vram_obj = VramManager(0x06011000, 0x7000, 200);
 	
-	Player* player;	
-	bool auto_mode = false;
-	int framecnt = 0;
+	Player* player;			
 	
 	MapSource map_source = map1;
 	Map* map;
@@ -46,7 +44,7 @@ public:
 		bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 1, 1);
 		
 		bgSetPriority(1, 3);
-		bgSetPriority(3, 2);
+		bgSetPriority(3, 1);
 		
 		Address transparentTile;
 		vram_chr_1.reserve(&transparentTile, 32);
@@ -82,15 +80,8 @@ public:
 		
 		objEnable1D();			
 		
-		player = new Player();		
-		
-		player->set_position(120,80);
-		player->update_position(&camera);
-		player->update_visual();				
-		player->get_attribute()->set_priority(0);		
-		
-		camera.follow(player);		
-				
+		player = new Player();								
+		camera.follow(player);						
 		player->set_movement_bounds(0,0,map->px_width(), map->px_height());
 		
 		camera.set_bounds(map->px_width(), map->px_height());
@@ -131,11 +122,9 @@ public:
 	
 	virtual void frame() override
 	{		
-		if(auto_mode && framecnt%8==0)
+		if(player->has_fallen())
 		{
-			int pos_index = player->get_pos_index();
-			int orientation = player->get_orientation();			
-			player->set_current_frame((orientation+1)%4, (pos_index+1)%7);			
+			close()->next(new MainScene());
 		}
 				
 		player->update();
@@ -150,8 +139,7 @@ public:
 			player->enable_falling();
 			//FATAL_ERROR("Game over");
 		}
-		
-		framecnt++;
+				
 		OamPool::deploy();
 	}
 	
