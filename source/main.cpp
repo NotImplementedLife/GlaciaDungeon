@@ -46,13 +46,8 @@ private:
 	Camera camera;
 public:	
 	virtual void init() override
-	{
-		Video::setMode(0);						
-		
-		//consoleDemoInit();
-		//printf("\n          Ice Skater\n        position  test\n\n");
-		//printf("UP  /DOWN  Change Orientation\n");
-		//printf("LEFT/RIGHT Change Position\n");		
+	{	
+		Video::setMode(0);		
 		
 		bgInit(3, BgSize::Text256x256 , BgPaletteType::Pal4bit, 1, 1);
 		
@@ -65,18 +60,18 @@ public:
 		BG_PALETTE[2] = Astralbrew::Drawing::Colors::Blue;
 		
 		map = new Map(map_source);
-		viewer=new MapViewer(map, 3);				
+		viewer = new MapViewer(map, 3);
 		
-		objEnable1D();				
+		objEnable1D();			
 		
-		player = new Player();
+		player = new Player();		
 		
 		player->set_position(120,80);
 		player->update_position(&camera);
 		player->update_visual();				
 		player->get_attribute()->set_priority(0);
 		
-		camera.follow(player);
+		camera.follow(player);		
 	}	
 	
 	virtual void on_key_up(int keys) override
@@ -101,8 +96,7 @@ public:
 		{						
 			player->move(0,sf24(0,32));
 		}
-					
-		bgUpdate();										
+		bgUpdate();								
 	}
 	
 	virtual void on_key_down(int keys) override
@@ -111,7 +105,7 @@ public:
 	}
 	
 	virtual void frame() override
-	{
+	{		
 		if(auto_mode && framecnt%8==0)
 		{
 			int pos_index = player->get_pos_index();

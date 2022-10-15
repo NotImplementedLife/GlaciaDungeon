@@ -39,12 +39,13 @@ MAPS        := maps
 ARCH	:=	-mthumb -mthumb-interwork
 
 CFLAGS	:=	-g -Wall -O2\
-		-mcpu=arm7tdmi -mtune=arm7tdmi -gdwarf-4\
+		-mcpu=arm7tdmi -mtune=arm7tdmi -gdwarf-4 -std=c++17\
+		-D_DEFAULT_SOURCE \
 		$(ARCH)
 
 CFLAGS	+=	$(INCLUDE)
 
-CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -isystem $(LIBGBA)/include -isystem $(ASTRALBREW)/include -std=c++17
+CXXFLAGS	:=	$(CFLAGS) -fno-rtti -fno-exceptions -isystem $(LIBGBA)/include -isystem $(ASTRALBREW)/include
 
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-g $(ARCH) -Wl,-Map,$(notdir $*.map)

@@ -56,35 +56,15 @@ public:
 		return val;
 	}
 	
-	void update()
-	{	
-		vx+=ax;
-		vy+=ay;
-		px+=vx;
-		py+=vy;	
-		
-		vx = to_0(vx, sf24(0,5));
-		vy = to_0(vy, sf24(0,5));
-		
-		ax = to_0(ax, ax*sf24(0,128));
-		ay = to_0(ay, ay*sf24(0,128));
-		
-				
-		set_position(px,py);
+	void frameset_standby() ;	
 	
-		if(crt_cooldown>0) {
-			crt_cooldown++;
-			if(crt_cooldown>=cooldown) 
-				crt_cooldown=0;
-			return;
-		}
-		crt_cooldown++;
-		set_current_frame(orientation, crt_frames[crt_frame_index]);
-		
-		crt_frame_index++;
-		if(crt_frame_index>=crt_frames_len) 
-			crt_frame_index = 0;		
-	}
+	void frameset_normal();	
+	
+	void frameset_start();	
+	
+	void frameset_rage();	
+	
+	void update();
 	
 	~Player() = default;
 	
