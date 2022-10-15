@@ -103,6 +103,7 @@ void Player::set_current_frame(int orientation, int pos_index)
 
 void Player::move(sf24 dx, sf24 dy)
 {
+	if(falling_scale>0) return;
 	ax=dx; 
 	ay=dy;	
 	
@@ -191,9 +192,22 @@ void Player::frameset_rage()
 	crt_frame_index = 0;				
 }
 
-bool Player::check_feet(const Map* map) const
+bool Player::check_feet(const Map* map)
 {
-	return map->operator()(feetx[0], feety[0])==0 && map->operator()(feetx[1], feety[1])==0;
+	bool fx = map->operator()(feetx[0], feety[0])==0;
+	bool fy = map->operator()(feetx[1], feety[1])==0;
+	if(!fx) 
+	{
+		fall_x = feetx[0];
+		fall_y = feety[0];
+	}
+	else if(!fy)
+	{
+		fall_x = feetx[1];
+		fall_y = feety[1];
+	}
+	
+	return  fx && fy;
 }
 
 #include <stdio.h>
@@ -201,10 +215,27 @@ bool Player::check_feet(const Map* map) const
 
 void Player::update()
 {		
+	if(falling_scale)
+	{						
+		ax = ay = 0;				
+		if(falling_scale<1024)
+		{
+			falling_scale=falling_scale*50;		
+			falling_scale=falling_scale/49;
+			OamPool::set_rotation_matrix(0, falling_scale, 0, 0, falling_scale);					
+		}						
+	}
 	vx+=ax;
-	vy+=ay;
+	vy+=ay;	
+	
 	px+=vx;
-	py+=vy;	
+	py+=vy;
+
+	if(falling_scale)
+	{
+		vx = vx*sf24(0,128);
+		vy = vy*sf24(0,128);		
+	}	
 	
 	if(px<bndx) 
 	{
@@ -268,6 +299,28 @@ void Player::update()
 		crt_frame_index = 0;		
 }
 
+void Player::enable_falling()
+{	
+	if(falling_scale>0) return;
+	falling_scale = 1*256;
+	// enable rotscal for sprite
+	OamPool::set_rotation_matrix(0, falling_scale, 0, 0, falling_scale);
+	
+	u16* attr0 = &((u16*)get_attribute())[0];
+	u16* attr1 = &((u16*)get_attribute())[1];
+		
+	*attr0|=(1<<8);	
+	*attr0&=~(1<<9);
+		
+	*attr1&=~(31<<9);	
+	
+	vx = vy = 0;
+	if(orientation==PLAYER_FRONT) vy = sf24(12,0);
+	else if(orientation==PLAYER_BACK) vy = -sf24(6,0);
+	else if(orientation==PLAYER_LEFT) vx = -sf24(6,0);
+	else if(orientation==PLAYER_RIGHT) vx = sf24(12,0);
+	
+}
 
 const int PLAYER_FRONT = 0;
 const int PLAYER_BACK  = 1;

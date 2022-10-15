@@ -39,6 +39,10 @@ private:
 	
 	int feetx[2];
 	int feety[2];
+	
+	int falling_scale = 0;	
+	int fall_x = 0;
+	int fall_y = 0;
 public:
 	Player();
 	
@@ -61,11 +65,13 @@ public:
 	
 	void update();
 	
-	bool check_feet(const Map* map) const;
+	bool check_feet(const Map* map);
 	
 	~Player() = default;
 	
 	inline int get_px() const {return (s16)px;}
 	inline int get_py() const {return (s16)py;}
+	
+	void enable_falling();
 	
 };

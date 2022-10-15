@@ -122,7 +122,11 @@ public:
 	
 	virtual void on_key_down(int keys) override
 	{		
-				
+		if(keys & KEY_START) restart();
+	}
+	
+	void restart() {
+		close()->next(new MainScene());
 	}
 	
 	virtual void frame() override
@@ -143,12 +147,19 @@ public:
 		
 		if(!player->check_feet(map))
 		{
-			printf("Game over");
+			player->enable_falling();
 			//FATAL_ERROR("Game over");
 		}
 		
 		framecnt++;
 		OamPool::deploy();
+	}
+	
+	~MainScene() 
+	{
+		delete player;
+		delete map;
+		delete viewer;
 	}
 };
 
