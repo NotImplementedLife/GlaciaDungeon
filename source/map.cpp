@@ -21,7 +21,7 @@ int Map::get_tile(int tx, int ty) const
 {
 	if(tx<0 || ty<0 || tx>=map_source.tiles_width || ty>=map_source.tiles_height)
 		return 0;
-	return map_source.source[ty * map_source.tiles_width + tx]+1;
+	return map_source.source[ty * map_source.tiles_width + tx]+2;
 }
 
 	

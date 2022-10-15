@@ -14,19 +14,9 @@ using namespace Astralbrew::Entity;
 #include "map.hpp"
 
 #include "map0.maps.h"
+#include "map1.maps.h"
 
-static const u8 src[] {
-	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-	2,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,
-	2,1,1,2,2,2,1,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,
-	2,2,1,2,2,2,2,2,2,2,2,1,2,2,2,2,2,2,2,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,
-	2,1,1,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2,2,1,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,
-	2,2,1,2,2,2,2,1,2,2,2,2,2,1,1,2,2,2,2,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,
-	2,1,1,2,2,2,2,1,2,2,2,2,2,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,
-	2,2,1,2,2,2,2,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1,2,
-	2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,	
-	2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,
-};
+#include "ice_tiles.h"
 
 class MainScene : public Scene
 {	
@@ -38,10 +28,11 @@ private:
 	bool auto_mode = false;
 	int framecnt = 0;
 	
-	MapSource map_source = map0;
+	MapSource map_source = map1;
 	Map* map;
 	MapViewer* viewer;
 	
+	Address ice_tiles;
 	
 	Camera camera;
 public:	
@@ -52,13 +43,21 @@ public:
 		
 		bgInit(3, BgSize::Text256x256 , BgPaletteType::Pal4bit, 1, 1);
 		
-		for(int i=0;i<16;i++) {
-			bgGetTilesPtr(3)[16+i]=0x1111;
-			bgGetTilesPtr(3)[32+i]=0x2222;
-		}
+		Address transparentTile;
+		vram_chr_1.reserve(&transparentTile, 32);
 		
-		BG_PALETTE[1] = Astralbrew::Drawing::Colors::White;
-		BG_PALETTE[2] = Astralbrew::Drawing::Colors::Blue;
+		vram_chr_1.reserve(&ice_tiles, ice_tilesTilesLen);
+		ice_tiles.write(ice_tilesTiles, ice_tilesTilesLen);
+		
+		//for(int i=0;i<16;i++) {
+			//bgGetTilesPtr(3)[16+i]=0x1111;
+			//bgGetTilesPtr(3)[32+i]=0x2222;
+		//}
+
+		dmaCopy(ice_tilesPal, BG_PALETTE, ice_tilesPalLen);
+			
+		BG_PALETTE[0] = Astralbrew::Drawing::Colors::Black;
+		//BG_PALETTE[2] = Astralbrew::Drawing::Colors::Blue;
 		
 		map = new Map(map_source);
 		viewer = new MapViewer(map, 3);
