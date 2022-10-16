@@ -220,6 +220,16 @@ public:
 		int x = finish_x - player->get_px();
 		int y = finish_y - player->get_py();
 		
+		if(-70<x && x<70 && -70<y && y<70)
+		{
+			if((x*x+y*y)<4900)
+			{
+				arrow->set_position(-40,-40);
+				arrow->update_position(nullptr);
+				return;
+			}
+		}		
+		
 		float a = atan2(-y,x);
 	
 		int _sin, _cos;		
