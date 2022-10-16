@@ -229,7 +229,8 @@ void MapScene::on_key_down(int keys)
 }
 
 void MapScene::restart() {
-	close()->next(new MapScene(mapdata));
+	const MapData* mapdata_bak = mapdata;
+	close()->next(new MapScene(mapdata_bak));
 }
 
 bool MapScene::player_near_portal()
