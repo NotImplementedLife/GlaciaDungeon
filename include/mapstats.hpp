@@ -18,7 +18,7 @@ extern const int MAP_STATS_COUNT;
 
 #include <stdlib.h>
 
-inline const MapData& random_map()
+inline const MapData* random_map()
 {
-	return MAP_STATS[rand()%MAP_STATS_COUNT];
+	return &MAP_STATS[rand()%MAP_STATS_COUNT];
 }

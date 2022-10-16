@@ -85,15 +85,29 @@ private:
 	PortalUpdater* portal_updater;
 	
 	int finish_x, finish_y;
+	const MapData* mapdata = nullptr;
 public:	
-	void load_mapstat(const MapData& md)
+	MainScene(const MapData* md = nullptr) : mapdata(md) { }	
+	
+	void load_mapstat(const MapData* md)
 	{		
-		map_source = md.source;
-		player->place(md.start_x, md.start_y);
-		finish_portal->set_position(md.finish_x, md.finish_y);
-		finish_x = md.finish_x;
-		finish_y = md.finish_y;
-		printf("\e[1;1H\e[2J%s\n",md.name);
+		map_source = md->source;
+		player->place(md->start_x, md->start_y);
+		finish_portal->set_position(md->finish_x, md->finish_y);
+		finish_x = md->finish_x;
+		finish_y = md->finish_y;
+		printf("\e[1;1H\e[2J%s\n",md->name);
+		mapdata = md;
+	}
+	
+	void next_map()
+	{
+		int i = mapdata-MAP_STATS;
+		if(i==MAP_STATS_COUNT-1)
+		{
+			close()->next(nullptr);
+		}		
+		close()->next(new MainScene(&MAP_STATS[i+1]));
 	}
 
 	virtual void init() override
@@ -178,12 +192,13 @@ public:
 		
 		arrow->update_position(&camera);
 		
-		load_mapstat(random_map());
+		if(mapdata)
+			load_mapstat(mapdata);
+		else
+			load_mapstat(random_map());
 		
 		map = new Map(map_source);
-		viewer = new MapViewer(map, 3);
-		
-		
+		viewer = new MapViewer(map, 3);				
 		
 		
 		camera.set_bounds(map->px_width(), map->px_height());
@@ -274,11 +289,11 @@ public:
 	
 	virtual void on_key_down(int keys) override
 	{		
-		if(keys & KEY_START) restart();
+		if(keys & KEY_START) close()->next(new MainScene());
 	}
 	
 	void restart() {
-		close()->next(new MainScene());
+		close()->next(new MainScene(mapdata));
 	}
 	
 	bool player_near_portal()
@@ -292,14 +307,14 @@ public:
 	{		
 		if(player->has_fallen())
 		{
-			close()->next(new MainScene());
+			restart();			
 		}
 				
 				
 		
 		if(player_near_portal())
-		{
-			close()->next(new MainScene());
+		{			
+			next_map();			
 		}
 				
 		player->update();
@@ -334,6 +349,6 @@ public:
 	}
 };
 
-astralbrew_launch_with_splash(MainScene)
+astralbrew_launch_with_splash(MainScene, &MAP_STATS[0])
 
 
