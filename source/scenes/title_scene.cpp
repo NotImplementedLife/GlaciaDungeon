@@ -1,0 +1,120 @@
+#include "title_scene.hpp"
+#include "map_scene.hpp"
+
+#include <stdio.h>
+
+#include "ice_floor.h"
+#include "title.h"
+
+using namespace Astralbrew::Video;
+
+__attribute__((section(".ewram.title_parallax.scrolls"))) short scrolls[64];
+__attribute__((section(".ewram.title_parallax"))) short scrdir=1;
+__attribute__((section(".ewram.title_parallax"))) short pal0;
+
+void parallax()
+{	
+	if(REG_VCOUNT<31)
+	{
+		BG_PALETTE[0] = Astralbrew::Drawing::Colors::White;
+		REG_BG3HOFS = 0;
+	}		
+	else if(REG_VCOUNT<94)		
+	{
+		int c=(94-REG_VCOUNT)/2;
+		BG_PALETTE[0] = (31<<10)|(c<<5)|c;
+		REG_BG3HOFS = 0;
+	}
+	else if(REG_VCOUNT<159)
+	{
+		int i=REG_VCOUNT-95;
+		REG_BG3HOFS = scrolls[i];
+		if(scrdir==1)
+			scrolls[i]+=(i)/4+1;
+		else
+			scrolls[i]-=(i)/4+1;		
+	}
+}
+
+void TitleScene::init()
+{	
+	for(int i=0;i<64;i++) scrolls[i]=0;
+	Video::setMode(0);
+	
+	bgInit(2, BgSize::Text256x256, BgPaletteType::Pal8bit, 1, 5);
+	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 6);
+	
+	Address transparentTile;
+	vram_chr_1.reserve(&transparentTile, 32);
+	
+	dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, (ice_floorTilesLen-32)/2);
+	
+	for(int i=0;i<1024;i++) bgGetMapPtr(3)[i]=0x600;
+	dmaCopy(ice_floorMap, bgGetMapPtr(3), ice_floorMapLen/4);
+	bgSetScroll(3,0,160);
+	bgUpdate();	
+	
+	dmaCopy(titleTiles, bgGetTilesPtr(2), titleTilesLen);
+	dmaCopy(titlePal, &BG_PALETTE[16], titlePalLen);
+	for(int i=0;i<titleTilesLen/2;i++)
+	{
+		short x = bgGetTilesPtr(2)[i];
+		if(x&0x00FF) x+=0x0010;
+		if(x&0xFF00) x+=0x1000;
+		bgGetTilesPtr(2)[i] = x;
+	}
+	dmaCopy(titleMap, bgGetMapPtr(2), titleMapLen);
+	
+
+	irqEnable(IRQ_HBLANK);
+	irqSet(IRQ_HBLANK, parallax);
+	
+		
+	
+	dmaCopy(ice_floorPal, BG_PALETTE, (ice_floorPalLen+3)/4*4);
+	
+	
+	objEnable1D();
+	player = new Player();			
+	player->set_position(120,128);
+	player->update_position(nullptr);
+	player->set_movement_bounds(0,0,8000,8000);
+}
+	
+void TitleScene::frame()
+{	
+	player->move(a,0);
+	mvcnt++;
+	if(mvcnt==600)
+	{
+		mvcnt=0;
+		a = -a;
+		scrdir = -scrdir;
+	}
+	
+	player->update();
+	player->update_visual();	
+	OamPool::deploy();
+}
+
+void TitleScene::on_key_down(int keys)
+{
+	if(keys & KEY_START)
+	{
+		irqDisable(IRQ_HBLANK);
+		irqSet(IRQ_HBLANK, nullptr);
+		REG_BG3HOFS = 0;
+		close()->next(new MapScene(&MAP_STATS[0]));				
+	}
+}
+
+void TitleScene::launch_map()
+{
+	close()->next(new MapScene());
+}
+
+TitleScene::~TitleScene()
+{
+	delete player;	
+	OamPool::reset();
+}
