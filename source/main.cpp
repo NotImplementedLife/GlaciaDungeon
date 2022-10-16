@@ -161,7 +161,7 @@ public:
 		
 		objEnable1D();					
 		
-		player = new Player();						
+		player = new Player();							
 		
 		finish_portal = Sprite::quick256(&portal_tiles, ObjSize::SIZE_32x32, ANCHOR_CENTER);
 		finish_portal->update_visual();
@@ -172,9 +172,9 @@ public:
 		arrow->update_visual();		
 		arrow->get_attribute()->set_rotation_scaling(true);		
 		arrow->get_attribute()->set_affine_matrix(1);		
-		arrow->get_attribute()->set_double_size(true);
+		arrow->get_attribute()->set_double_size(true);		
 		arrow->set_hitbox(Hitbox(0,0,64,64));
-		arrow->set_anchor(128,128);
+		arrow->set_anchor(128,128);		
 		
 		arrow->update_position(&camera);
 		
@@ -281,9 +281,23 @@ public:
 		close()->next(new MainScene());
 	}
 	
+	bool player_near_portal()
+	{
+		int x = player->get_px() - finish_portal->pos_x();
+		int y = player->get_py()+20 - finish_portal->pos_y();
+		return x*x+y*y<100;
+	}
+	
 	virtual void frame() override
 	{		
 		if(player->has_fallen())
+		{
+			close()->next(new MainScene());
+		}
+				
+				
+		
+		if(player_near_portal())
 		{
 			close()->next(new MainScene());
 		}

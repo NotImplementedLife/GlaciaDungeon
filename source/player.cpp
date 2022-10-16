@@ -76,7 +76,7 @@ Player::Player() : Sprite(ObjSize::SIZE_64x64, ObjBitDepth::_8bit, 1, $(player))
 	get_attribute()->set_priority(0);		
 	
 	get_visual()->set_frame(0, &gfx_addr);
-	get_visual()->set_crt_gfx(0);	
+	get_visual()->set_crt_gfx(0);			
 	set_anchor(128,128);	
 	//set_anchor(ANCHOR_CENTER);	
 	
