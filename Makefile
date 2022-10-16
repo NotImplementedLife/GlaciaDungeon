@@ -27,7 +27,7 @@ include $(DEVKITARM)/gba_rules
 TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
 SOURCES		:= source source/scenes source/data source/levels
-INCLUDES	:= include include/scenes include/data include/levels
+INCLUDES	:= include include/scenes include/data include/levels maps
 DATA		:=
 MUSIC		:=
 GRAPHICS    := gfx

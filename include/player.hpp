@@ -48,6 +48,8 @@ private:
 public:
 	Player();
 	
+	inline void place(int _px, int _py) {this->px=_px, this->py=_py;}
+	
 	void set_movement_bounds(int x, int y, int w, int h);
 	
 	void set_current_frame(int orientation, int pos_index);
