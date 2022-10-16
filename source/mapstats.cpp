@@ -19,8 +19,8 @@ const MapData MAP_STATS[]
 	MAP_DATA_intro2,
 	MAP_DATA_intro3,
 	MAP_DATA_map1,
-	MAP_DATA_map2,	
-	MAP_DATA_map3,		
+	MAP_DATA_map2,
+	MAP_DATA_map3,
 	MAP_DATA_map4,
 	MAP_DATA_map5,
 };
