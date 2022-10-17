@@ -124,7 +124,7 @@ void TitleScene::on_key_held(int keys)
 			y--;
 			player->get_attribute()->set_y(y);
 			player->set_position(x,y);		
-			OamPool::set_rotation_matrix(0, 256+3*(100-y), 0, 0, 256+3*(100-y));
+			OamPool::set_rotation_matrix(0, 256+6*(100-y), 0, 0, 256+6*(100-y));
 		}		
 	}
 	else if(keys & KEY_DOWN)
@@ -136,7 +136,7 @@ void TitleScene::on_key_held(int keys)
 			y++;
 			player->get_attribute()->set_y(y);
 			player->set_position(x,y);		
-			OamPool::set_rotation_matrix(0, 256+3*(100-y), 0, 0, 256+3*(100-y));
+			OamPool::set_rotation_matrix(0, 256+6*(100-y), 0, 0, 256+6*(100-y));
 		}
 	}
 }
