@@ -20,6 +20,8 @@ public:
 	
 	void on_key_down(int keys) override;
 	
+	void on_key_held(int keys) override;
+	
 	void launch_map();
 	
 	~TitleScene();

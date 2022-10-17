@@ -76,9 +76,13 @@ void TitleScene::init()
 	
 	objEnable1D();
 	player = new Player();			
-	player->set_position(120,128);
+	player->set_position(120,132);
 	player->update_position(nullptr);
 	player->set_movement_bounds(0,0,8000,8000);
+	
+	player->get_attribute()->set_rotation_scaling(true);
+	player->get_attribute()->set_affine_matrix(0);
+	OamPool::set_rotation_matrix(0, 256, 0, 0, 256);
 }
 	
 void TitleScene::frame()
@@ -105,6 +109,35 @@ void TitleScene::on_key_down(int keys)
 		irqSet(IRQ_HBLANK, nullptr);
 		REG_BG3HOFS = 0;
 		close()->next(new MapScene(&MAP_STATS[0]));				
+	}
+}
+
+void TitleScene::on_key_held(int keys)
+{
+	if(keys & KEY_UP)
+	{
+		int x = player->get_px();
+		int y = player->get_attribute()->get_y();
+		//FATAL_ERROR(sf24(y).to_string());
+		if(y>64)
+		{
+			y--;
+			player->get_attribute()->set_y(y);
+			player->set_position(x,y);		
+			OamPool::set_rotation_matrix(0, 256+3*(100-y), 0, 0, 256+3*(100-y));
+		}		
+	}
+	else if(keys & KEY_DOWN)
+	{
+		int x = player->get_px();
+		int y = player->get_attribute()->get_y();		
+		if(y<100)
+		{
+			y++;
+			player->get_attribute()->set_y(y);
+			player->set_position(x,y);		
+			OamPool::set_rotation_matrix(0, 256+3*(100-y), 0, 0, 256+3*(100-y));
+		}
 	}
 }
 
