@@ -24,7 +24,7 @@ void Ghost::loadVramData(VramManager& allocator)
 }
 
 void Ghost::update()
-{
+{	
 	frm_cnt++;
 	if(frm_cnt==5)
 	{
@@ -45,7 +45,7 @@ void Ghost::update()
 void Ghost::attach_ai(GhostAI* ai)
 {
 	this->ai = ai;
-	int chk = get_chunk();
+	int chk = get_chunk();	
 	ai->ghost_pos(pos_x(), pos_y());
 	assert((chk>>16)>=0);
 	ai->set_chunk(chk & 0xFFFF, chk>>16);

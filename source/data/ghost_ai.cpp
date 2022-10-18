@@ -37,14 +37,14 @@ int GhostAI::get_y() const
 
 SquareAI::SquareAI() : GhostAI()
 {
-	len = 32+rand()%90;
+	len = 10+rand()%90;
 }
 
 void SquareAI::set_chunk(int cx, int cy) 
 {
 	GhostAI::set_chunk(cx,cy);
-	gx = this->cx+rand()%(110-len);
-	gy = this->cy+rand()%(110-len);
+	gx = 9+this->cx+rand()%(110-len);
+	gy = 9+this->cy+rand()%(110-len);
 }
 
 void SquareAI::execute_step()
