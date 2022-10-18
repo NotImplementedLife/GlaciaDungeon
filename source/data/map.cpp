@@ -178,6 +178,8 @@ void MapViewer::invalidate()
 	}
 }
 
+#include <stdio.h>
+
 void MapViewer::set_scroll(int x, int y)
 {
 	scroll(x-scrollX, y-scrollY);

@@ -4,6 +4,8 @@
 #include "player.hpp"
 #include "map.hpp"
 #include "mapstats.hpp"
+#include "chunk_provider.hpp"
+#include "chunk_entity.hpp"
 
 
 using namespace Astralbrew::World;
@@ -47,6 +49,9 @@ private:
 	
 	int finish_x, finish_y;
 	const MapData* mapdata = nullptr;
+	
+	ChunkProvider chunk_provider;
+	Vector<ChunkEntity*> chunk_entities;
 public:	
 	MapScene(const MapData* md = nullptr);	
 	void load_mapstat(const MapData* md);		

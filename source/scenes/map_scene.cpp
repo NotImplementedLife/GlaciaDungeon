@@ -17,6 +17,8 @@ using namespace Astralbrew::Entity;
 #include "finish_portal.h"
 #include "arrow.h"
 
+#include "ghost.hpp"
+
 
 MosaicIncreaser::MosaicIncreaser() : ScheduledTask(5, 16) {}
 
@@ -51,6 +53,7 @@ MapScene::MapScene(const MapData* md) : mapdata(md) { }
 
 void MapScene::load_mapstat(const MapData* md)
 {		
+	chunk_provider = ChunkProvider(md->name);
 	map_source = md->source;
 	player->place(md->start_x, md->start_y);
 	finish_portal->set_position(md->finish_x, md->finish_y);
@@ -116,6 +119,8 @@ void MapScene::init()
 	arrow_tiles.write(arrowTiles, arrowTilesLen);
 	dmaCopy(arrowPal, &SPRITE_PALETTE[0xD0], arrowPalLen);		
 	
+	
+	Ghost::loadVramData(vram_obj);
 			
 	for(int i=0;i<1024;i++)
 	{
@@ -167,7 +172,7 @@ void MapScene::init()
 	player->set_movement_bounds(0,0,map->px_width(), map->px_height());		
 
 	portal_updater = new PortalUpdater(finish_portal, portal_tiles);
-	schedule_task(portal_updater);		
+	schedule_task(portal_updater);			
 }	
 
 void MapScene::update_arrow() 
@@ -259,7 +264,60 @@ void MapScene::frame()
 	finish_portal->update_position(&camera);
 	update_arrow();
 	
-	viewer->set_scroll(camera.get_x(), camera.get_y());		
+	viewer->set_scroll(camera.get_x(), camera.get_y());
+	
+	int chk_x = viewer->get_scroll_x()/128;
+	int chk_y = viewer->get_scroll_y()/128;
+	for(int i=0;i<chunk_entities.size();i++) 
+	{
+		int chk_id = chunk_entities[i]->get_chunk();
+		int e_x = chk_id & 0xFFFF;
+		int e_y = chk_id >> 16;
+		if(abs(chk_x-e_x)>=2 || abs(chk_y-e_y)>=2)
+		{
+			// entity no longer in chunk, remove it
+			ChunkEntity* entity = chunk_entities[i];			
+			chunk_entities.remove(entity);
+			delete entity;			
+			
+			chunk_provider.unregister_chunk(e_x, e_y);
+		}
+	}
+	
+	for(int dy=-1;dy<=1;dy++)
+	{		
+		int cy = chk_y+dy;
+		if(cy<0) continue;
+		for(int dx=-1;dx<=1;dx++)
+		{			
+			int cx = chk_x+dx;			
+			if(cx<0) continue;
+			if(chunk_provider.register_chunk(cx,cy))
+			{				
+				if(chunk_provider.chunk_has_enemies(cx,cy))
+				{
+					int cnt = 1 + rand() % 3;
+					for(int i=0;i<cnt;i++)
+					{
+						Ghost* ghost = new Ghost();
+						ghost->set_chunk(chk_x+dx, chk_y+dy);
+						ghost->set_position((chk_x+dx)*128+64, (chk_y+dy)*128+64);
+						chunk_entities.push_back(ghost);
+						
+					}
+				}
+			}			
+		}
+	}
+	
+	for(int i=0;i<chunk_entities.size();i++)
+	{
+		chunk_entities[i]->update();
+		chunk_entities[i]->update_visual();
+		chunk_entities[i]->update_position(&camera);
+	}
+	
+	
 	bgSetScroll(1, camera.get_x() & 0xFF, camera.get_y() & 0xFF);
 	bgUpdate();								
 	
@@ -283,4 +341,6 @@ MapScene::~MapScene()
 	delete arrow;
 	delete map;
 	delete viewer;
+	for(int i=0;i<chunk_entities.size();i++)
+		delete chunk_entities[i];
 }

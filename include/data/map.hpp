@@ -18,11 +18,11 @@ public:
 	
 	int operator() (int x, int y) const;	
 	
-	inline int tiles_width() { return map_source.tiles_width; }
-	inline int tiles_height() { return map_source.tiles_height; }
+	inline int tiles_width() const { return map_source.tiles_width; }
+	inline int tiles_height() const { return map_source.tiles_height; }
 	
-	inline int px_width() { return tiles_width()<<3; }
-	inline int px_height() { return tiles_height()<<3; }
+	inline int px_width() const { return tiles_width()<<3; }
+	inline int px_height() const { return tiles_height()<<3; }
 	
 	int get_tile(int tx, int ty) const;
 };
@@ -41,13 +41,16 @@ private:
 	void scroll8x(int px);
 	void scroll8y(int py);	
 		
-	void invalidate();
+	void invalidate();	
 public:
 	MapViewer(const Map* map, int map_id);	
 	
 	void scroll(int dx, int dy);	
 	
 	void set_scroll(int x, int y);
+	
+	inline int get_scroll_x() const	{ return scrollX; }
+	inline int get_scroll_y() const	{ return scrollY; }
 	
 	~MapViewer();
 };

@@ -11,8 +11,6 @@
 #include "map4.mapdata.h"
 #include "map5.mapdata.h"
 
-#define cr_map(mapx, sx, sy, fx, fy) { #mapx, mapx, sx, sy, fx, fy }
-
 const MapData MAP_STATS[]
 {	
 	MAP_DATA_intro1,

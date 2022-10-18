@@ -12,6 +12,8 @@ struct MapData
 	int finish_y;
 };
 
+#define cr_map(mapx, sx, sy, fx, fy) { #mapx, mapx, sx, sy, fx, fy }
+
 extern const MapData MAP_STATS[];
 
 extern const int MAP_STATS_COUNT;
