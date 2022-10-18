@@ -59,7 +59,7 @@ void MapScene::load_mapstat(const MapData* md)
 	finish_portal->set_position(md->finish_x, md->finish_y);
 	finish_x = md->finish_x;
 	finish_y = md->finish_y;
-	printf("\e[1;1H\e[2J%s\n",md->name);
+	//printf("\e[1;1H\e[2J%s\n",md->name);
 	mapdata = md;
 }
 
@@ -302,6 +302,9 @@ void MapScene::frame()
 						Ghost* ghost = new Ghost();
 						ghost->set_chunk(chk_x+dx, chk_y+dy);
 						ghost->set_position((chk_x+dx)*128+64, (chk_y+dy)*128+64);
+						
+						ghost->attach_ai(new SquareAI());
+						
 						chunk_entities.push_back(ghost);
 						
 					}
@@ -312,6 +315,10 @@ void MapScene::frame()
 	
 	for(int i=0;i<chunk_entities.size();i++)
 	{
+		if(chunk_entities[i]->is_of_class(class_of(GHOST)))
+		{
+			((Ghost*)chunk_entities[i])->read_player_pos(player);
+		}
 		chunk_entities[i]->update();
 		chunk_entities[i]->update_visual();
 		chunk_entities[i]->update_position(&camera);

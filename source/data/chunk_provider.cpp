@@ -26,7 +26,7 @@ bool ChunkProvider::register_chunk(int cx, int cy)
 {
 	int chk_id = (cy<<16)|cx;
 	if(chunks.exists(chk_id)) return false;
-	chunks.push_back(chk_id);	
+	chunks.push_back(chk_id);
 	return true;
 }
 
