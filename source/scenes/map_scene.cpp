@@ -318,6 +318,10 @@ void MapScene::frame()
 		if(chunk_entities[i]->is_of_class(class_of(GHOST)))
 		{
 			((Ghost*)chunk_entities[i])->read_player_pos(player);
+			if(chunk_entities[i]->touches(player))
+			{
+				restart();
+			}
 		}
 		chunk_entities[i]->update();
 		chunk_entities[i]->update_visual();
