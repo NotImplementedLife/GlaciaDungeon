@@ -72,7 +72,11 @@ CircleAI::CircleAI() : GhostAI()
 	t = 0;
 }
 
+typedef unsigned short u16;
+typedef short s16;
+
 extern const int cos_sin[];
+const s16* trig_table = (s16*)cos_sin;
 
 void CircleAI::set_chunk(int cx, int cy)
 {
@@ -81,22 +85,19 @@ void CircleAI::set_chunk(int cx, int cy)
 	oy = r+this->cy+rand()%(128-2*r);
 }
 
-typedef unsigned short u16;
-typedef short s16;
-
 void CircleAI::execute_step()
 {
 	cooldown++;
 	if(cooldown==2) cooldown=0;
 	if(cooldown) return;	
-	u16 x = cos_sin[t]>>16;
-	u16 y = cos_sin[t] & 0x0000FFFF;
-	gx = ox + r*(s16)x/16384;
-	gy = oy + r*(s16)y/16384;
+	int x = trig_table[2*t];
+	int y = trig_table[2*t+1];
+	gx = ox + ((r*x)>>14);
+	gy = oy + ((r*y)>>14);
 	t+=dir, t&=0xFF;
 }
 
-const int cos_sin[256] = 
+__attribute__((section(".ewram"))) const int cos_sin[256] = 
 {
 	(((u16)16384<<16)|(u16)0), (((u16)16379<<16)|(u16)402), (((u16)16364<<16)|(u16)803), (((u16)16339<<16)|(u16)1205), 
 	(((u16)16069<<16)|(u16)3196), (((u16)15985<<16)|(u16)3589), (((u16)15892<<16)|(u16)3980), (((u16)15790<<16)|(u16)4369), 

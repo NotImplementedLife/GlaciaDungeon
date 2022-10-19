@@ -41,6 +41,7 @@ private:
 public:
 	CircleAI();
 	void set_chunk(int cx, int cy) override;
+		
 	void execute_step() override;
 	
 };
