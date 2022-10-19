@@ -14,6 +14,7 @@ private:
 	int gfx_cnt = 0;
 	Astralbrew::Memory::Address crt_gfx;
 	GhostAI* ai = nullptr;
+	int old_x=0;
 public:
 	Ghost();
 	

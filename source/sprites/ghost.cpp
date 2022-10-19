@@ -39,6 +39,15 @@ void Ghost::update()
 	{		
 		ai->execute_step();
 		set_position(ai->get_x(), ai->get_y());
+		if(pos_x()>old_x)
+		{
+			get_attribute()->set_flip_h(true);
+		}
+		else if (pos_x()<old_x)
+		{
+			get_attribute()->set_flip_h(false);
+		}
+		old_x = pos_x();
 	}
 }
 

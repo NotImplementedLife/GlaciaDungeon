@@ -29,3 +29,18 @@ public:
 	void set_chunk(int cx, int cy) override;
 	void execute_step() override;
 };
+
+class CircleAI : public GhostAI
+{
+private:
+	int ox, oy;
+	int r;	
+	int t;
+	int dir=1;
+	int cooldown=1;	
+public:
+	CircleAI();
+	void set_chunk(int cx, int cy) override;
+	void execute_step() override;
+	
+};

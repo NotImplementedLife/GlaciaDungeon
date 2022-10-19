@@ -303,7 +303,11 @@ void MapScene::frame()
 						ghost->set_chunk(chk_x+dx, chk_y+dy);
 						ghost->set_position((chk_x+dx)*128+64, (chk_y+dy)*128+64);
 						
-						ghost->attach_ai(new SquareAI());
+						int s = rand()%5;
+						if(s<2)
+							ghost->attach_ai(new SquareAI());
+						else
+							ghost->attach_ai(new CircleAI());
 						
 						chunk_entities.push_back(ghost);
 						
