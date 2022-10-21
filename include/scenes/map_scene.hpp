@@ -31,6 +31,8 @@ private:
 	Player* player;			
 	Sprite* finish_portal;
 	Sprite* arrow;
+	Sprite* digits[6];	
+	Address digits_addr[6];
 	
 	MapSource map_source;
 	Map* map;
@@ -39,6 +41,7 @@ private:
 	Address ice_tiles;
 	Address portal_tiles;
 	Address arrow_tiles;
+	Address digits_tiles;	
 	
 	Camera camera;
 	
@@ -52,11 +55,15 @@ private:
 	
 	ChunkProvider chunk_provider;
 	Vector<ChunkEntity*> chunk_entities;
-public:	
+	
+	int mm=0, ss=0;
+public:		
 	MapScene(const MapData* md = nullptr);	
 	void load_mapstat(const MapData* md);		
 	void next_map();	
 	virtual void init() override;		
+	
+	void increment_timer();
 	
 	void update_arrow();		
 	

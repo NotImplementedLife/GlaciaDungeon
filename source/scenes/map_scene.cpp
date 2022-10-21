@@ -21,6 +21,8 @@ using namespace Astralbrew::Entity;
 
 #include "qmath.h"
 
+#include "digits.h"
+
 
 MosaicIncreaser::MosaicIncreaser() : ScheduledTask(5, 16) {}
 
@@ -101,11 +103,12 @@ void MapScene::init()
 	
 	dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, ice_floorTilesLen-32);
 	dmaCopy(ice_floorMap, bgGetMapPtr(1), ice_floorMapLen);
-	dmaCopy(ice_floorPal, &BG_PALETTE[128], ice_floorPalLen);
+	dmaCopy(ice_floorPal, &BG_PALETTE[128], ice_floorPalLen);	
+	
 	
 	vram_obj.reserve(&portal_tiles, finish_portalTilesLen);
 	portal_tiles.write(finish_portalTiles, finish_portalTilesLen);
-	dmaCopy(finish_portalPal, &SPRITE_PALETTE[0x90], finish_portalPalLen);		
+	dmaCopy(finish_portalPal, &SPRITE_PALETTE[0x90], finish_portalPalLen);			
 	
 	u16* dst = (u16*)portal_tiles.get_value();
 	for(int i=0;i<finish_portalTilesLen;i++)
@@ -129,6 +132,28 @@ void MapScene::init()
 		bgGetMapPtr(1)[i]&=0x0FFF;
 		bgGetMapPtr(1)[i]|=0x8000;			
 	}		
+	
+	
+	vram_obj.reserve(&digits_tiles, digitsTilesLen);
+	digits_tiles.write(digitsTiles, digitsTilesLen);
+	dmaCopy(digitsPal, &SPRITE_PALETTE[0xE0], digitsPalLen);
+	
+	
+	for(int i=0;i<6;i++)
+	{
+		digits_addr[i].set_value((u8*)digits_tiles.get_value());
+		digits[i] = Sprite::quick16(&digits_addr[i], ObjSize::SIZE_8x8, ANCHOR_CENTER);	
+		digits[i]->get_attribute()->set_palette_number(0xE);
+		digits[i]->set_position(8+8*(i+i/3),8);
+		digits[i]->update_visual();
+		digits[i]->update_position(nullptr);		
+	}	
+	digits_addr[5].set_value((u8*)digits_tiles.get_value() + 32*10);
+	digits[5]->set_position(8*4,8);
+	digits[5]->update_visual();
+	digits[5]->update_position(nullptr);		
+	
+	
 	
 	
 	//for(int i=0;i<16;i++) {
@@ -176,6 +201,31 @@ void MapScene::init()
 	portal_updater = new PortalUpdater(finish_portal, portal_tiles);
 	schedule_task(portal_updater);			
 }	
+
+void MapScene::increment_timer()
+{
+	ss++;
+	if(ss==60)
+	{
+		mm++;
+		digits_addr[0].set_value((u8*)digits_tiles.get_value() + 32*(mm/100));		
+		digits_addr[1].set_value((u8*)digits_tiles.get_value() + 32*(mm/10%10));
+		digits_addr[2].set_value((u8*)digits_tiles.get_value() + 32*(mm%10));
+		
+		digits[0]->update_visual();
+		digits[1]->update_visual();
+		digits[2]->update_visual();
+		
+		ss=0;
+	}
+	
+	digits_addr[3].set_value((u8*)digits_tiles.get_value() + 32*(ss/10));		
+	digits_addr[4].set_value((u8*)digits_tiles.get_value() + 32*(ss%10));
+		
+	digits[3]->update_visual();
+	digits[4]->update_visual();	
+	
+}
 
 void MapScene::update_arrow() 
 {			
@@ -270,6 +320,8 @@ void MapScene::frame()
 	finish_portal->update_position(&camera);
 	update_arrow();
 	
+	increment_timer();
+	
 	viewer->set_scroll(camera.get_x(), camera.get_y());
 	
 	int chk_x = viewer->get_scroll_x()/128;
@@ -336,8 +388,7 @@ void MapScene::frame()
 		chunk_entities[i]->update();
 		chunk_entities[i]->update_visual();
 		chunk_entities[i]->update_position(&camera);
-	}
-	
+	}	
 	
 	bgSetScroll(1, camera.get_x() & 0xFF, camera.get_y() & 0xFF);
 	bgUpdate();								
@@ -364,4 +415,6 @@ MapScene::~MapScene()
 	delete viewer;
 	for(int i=0;i<chunk_entities.size();i++)
 		delete chunk_entities[i];
+	for(int i=0;i<5;i++)
+		delete digits[i];
 }
