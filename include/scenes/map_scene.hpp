@@ -79,5 +79,7 @@ public:
 	
 	virtual void frame() override;
 	
+	void open_reports();
+	
 	~MapScene();	
 };

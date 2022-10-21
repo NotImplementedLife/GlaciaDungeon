@@ -22,6 +22,7 @@ using namespace Astralbrew::Entity;
 #include "qmath.h"
 
 #include "digits.h"
+#include "end-level-screen.h"
 
 
 MosaicIncreaser::MosaicIncreaser() : ScheduledTask(5, 16) {}
@@ -81,13 +82,13 @@ void MapScene::init()
 {			
 	
 	Video::setMode(0);		
-	consoleDemoInit();
+	//consoleDemoInit();
 	
-	bgInit(1, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 5);
+	bgInit(2, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 5);
 	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 1, 6);
 	
-	bgSetPriority(1, 3);
-	bgSetPriority(3, 1);
+	bgSetPriority(2, 3);
+	bgSetPriority(3, 2);
 	
 	bgSetMosaicSize(1,1);
 	bgMosaicEnable(1);
@@ -102,7 +103,7 @@ void MapScene::init()
 	dmaCopy(ice_tilesPal, BG_PALETTE, (ice_tilesPalLen+3)/4*4);
 	
 	dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, ice_floorTilesLen-32);
-	dmaCopy(ice_floorMap, bgGetMapPtr(1), ice_floorMapLen);
+	dmaCopy(ice_floorMap, bgGetMapPtr(2), ice_floorMapLen);
 	dmaCopy(ice_floorPal, &BG_PALETTE[128], ice_floorPalLen);	
 	
 	
@@ -129,8 +130,8 @@ void MapScene::init()
 			
 	for(int i=0;i<1024;i++)
 	{
-		bgGetMapPtr(1)[i]&=0x0FFF;
-		bgGetMapPtr(1)[i]|=0x8000;			
+		bgGetMapPtr(2)[i]&=0x0FFF;
+		bgGetMapPtr(2)[i]|=0x8000;			
 	}		
 	
 	
@@ -286,7 +287,11 @@ void MapScene::on_key_down(int keys)
 
 void MapScene::restart() {
 	const MapData* mapdata_bak = mapdata;
-	close()->next(new MapScene(mapdata_bak));
+	
+	open_reports();
+	
+	while(1) VBlankIntrWait();
+	//close()->next(new MapScene(mapdata_bak));
 }
 
 bool MapScene::player_near_portal()
@@ -390,7 +395,7 @@ void MapScene::frame()
 		chunk_entities[i]->update_position(&camera);
 	}	
 	
-	bgSetScroll(1, camera.get_x() & 0xFF, camera.get_y() & 0xFF);
+	bgSetScroll(2, camera.get_x() & 0xFF, camera.get_y() & 0xFF);
 	bgUpdate();								
 	
 	if(!falling && !player->check_feet(map))
@@ -404,6 +409,23 @@ void MapScene::frame()
 			
 	OamPool::deploy();
 }
+
+
+void MapScene::open_reports()
+{
+	player->get_attribute()->set_x(-64);
+	OamPool::deploy();
+	bgInit(1, BgSize::Text256x512, BgPaletteType::Pal4bit, 0, 1);
+	//bgSetPriority(2,1);
+	dmaCopy(end_level_screenTiles, (void*)0x06001800, end_level_screenTilesLen);
+	dmaCopy(end_level_screenMap, bgGetMapPtr(1), end_level_screenMapLen);
+	dmaCopy(end_level_screenPal, &BG_PALETTE[0x90], end_level_screenPalLen);
+	
+	short* buff = (short*)bgGetMapPtr(1);
+	for(int i=0;i<640;i++) buff[i]|=0x00C0;
+	
+}
+
 
 MapScene::~MapScene() 
 {
