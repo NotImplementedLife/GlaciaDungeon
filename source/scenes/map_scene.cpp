@@ -287,11 +287,8 @@ void MapScene::on_key_down(int keys)
 
 void MapScene::restart() {
 	const MapData* mapdata_bak = mapdata;
-	
-	open_reports(1); 
-	
-	while(1) VBlankIntrWait();
-	//close()->next(new MapScene(mapdata_bak));
+		
+	close()->next(new MapScene(mapdata_bak));
 }
 
 bool MapScene::player_near_portal()
@@ -317,7 +314,8 @@ void MapScene::frame()
 				
 	if(player_near_portal())
 	{			
-		next_map();			
+		open_reports(0);
+		//next_map();			
 	}
 			
 	player->update();
@@ -410,6 +408,7 @@ void MapScene::frame()
 	OamPool::deploy();
 }
 
+#include "title_scene.hpp"
 
 void MapScene::open_reports(int code)
 {
@@ -424,6 +423,7 @@ void MapScene::open_reports(int code)
 	for(int i=0;i<640;i++) buff[i]|=0x00C0;	
 	
 	if(code!=0) BG_PALETTE[0x92] = Colors::Red;
+	else BG_PALETTE[0x92] = Colors::Green;
 	
 	
 	bgSetScroll(1,0,-160);
@@ -433,8 +433,9 @@ void MapScene::open_reports(int code)
 	bgInit(0, BgSize::Text256x256, BgPaletteType::Pal4bit, 0, 7);
 	vwf.set_render_space((void*)0x06006480,10,22);
 	VwfEngine::prepare_map(vwf, bgGetMapPtr(0), 32, 4, 6, 0xA);
+	vwf.clear(BgPaletteType::Pal4bit);
 	
-	BG_PALETTE[0xA1] = Colors::Green;
+	BG_PALETTE[0xA1] = Colors::DarkGreen;
 	BG_PALETTE[0xA2] = Colors::Red;
 	BG_PALETTE[0xA3] = Colors::White;
 	BG_PALETTE[0xA4] = Colors::Yellow;
@@ -446,6 +447,10 @@ void MapScene::open_reports(int code)
 			vwf.put_text("You fell out of the ice platform.\n", Pal4bit, SolidColorBrush(0x3));
 		else if(code==2)
 			vwf.put_text("A ghost attacked you.\n", Pal4bit, SolidColorBrush(0x3));		
+	}
+	else 
+	{
+		vwf.put_text("                    Well Done!\n", Pal4bit, SolidColorBrush(0x1));
 	}
 	
 	for(int i=0;i<40;i++)
@@ -462,10 +467,53 @@ void MapScene::open_reports(int code)
 	}			
 	
 	reports = true;
+	for(int i=0;i<6;i++)
+		digits[i]->get_attribute()->set_priority(0);
 	
+	bool digits_moving = true;
 	while(1)
 	{
 		VBlankIntrWait();
+		
+		scanKeys();
+		int keys = keysDown();
+		
+		if(code!=0)
+		{			
+			if(keys & KEY_A) restart(); 
+			else if(keys & KEY_B)
+			{
+				close()->next(new TitleScene());
+			}
+		}
+		else 
+		{
+			if(digits_moving)
+			{
+				for(int i=0;i<6;i++)
+				{
+					int x = digits[i]->get_attribute()->get_x();
+					int y = digits[i]->get_attribute()->get_y();
+					if(y<93)
+					{
+						digits[i]->get_attribute()->set_x(x+1);
+						digits[i]->get_attribute()->set_y(y+1);
+					} 
+					else if(i==5)
+					{
+						vwf.put_text("\n                    HI SCORE!!!", Pal4bit, SolidColorBrush(0x4));
+						digits_moving = false;
+						
+						vwf.put_text("\n\n                 A - next level", Pal4bit, SolidColorBrush(0x4));
+					}
+				}
+			}
+			else
+			{
+				if(keys & KEY_A) next_map();
+			}
+			OamPool::deploy();
+		}
 	}
 }
 
@@ -480,6 +528,6 @@ MapScene::~MapScene()
 	delete viewer;
 	for(int i=0;i<chunk_entities.size();i++)
 		delete chunk_entities[i];
-	for(int i=0;i<5;i++)
+	for(int i=0;i<6;i++)
 		delete digits[i];
 }

@@ -37,12 +37,17 @@ void parallax()
 }
 
 void TitleScene::init()
-{	
+{
+	Utils::zeroize((void*)0x06000000, 0x18000);
+	
 	for(int i=0;i<64;i++) scrolls[i]=0;
 	Video::setMode(0);
 	
 	bgInit(2, BgSize::Text256x256, BgPaletteType::Pal8bit, 1, 5);
 	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 6);
+	
+	bgSetScroll(2,0,0);
+	bgUpdate();
 	
 	Address transparentTile;
 	vram_chr_1.reserve(&transparentTile, 32);
