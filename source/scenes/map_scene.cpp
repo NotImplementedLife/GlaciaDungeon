@@ -19,6 +19,8 @@ using namespace Astralbrew::Entity;
 
 #include "ghost.hpp"
 
+#include "qmath.h"
+
 
 MosaicIncreaser::MosaicIncreaser() : ScheduledTask(5, 16) {}
 
@@ -182,19 +184,18 @@ void MapScene::update_arrow()
 	
 	if(-70<x && x<70 && -70<y && y<70)
 	{
-		if((x*x+y*y)<4900)
+		if(is_in_circle(x,y, 70))		
 		{
 			arrow->set_position(-40,-40);
 			arrow->update_position(nullptr);
 			return;
 		}
-	}		
+	}					
 	
-	float a = atan2(-y,x);
-
-	int _sin, _cos;		
-	_sin=(int)(256*sin(a));
-	_cos=(int)(256*cos(a));		
+	int sc = norm_coords(x, -y);
+			
+	short _cos = sc & 0xFFFF;
+	short _sin = (sc>>16) & 0xFFFF;		
 			
 	int cx = player->get_attribute()->get_x()+32;
 	int cy = player->get_attribute()->get_y()+32;
@@ -242,7 +243,7 @@ bool MapScene::player_near_portal()
 {
 	int x = player->get_px() - finish_portal->pos_x();
 	int y = player->get_py()+20 - finish_portal->pos_y();
-	return x*x+y*y<100;
+	return is_in_circle(x,y,10);
 }
 
 void MapScene::frame()
@@ -266,7 +267,7 @@ void MapScene::frame()
 	
 	viewer->set_scroll(camera.get_x(), camera.get_y());
 	
-	int chk_x = viewer->get_scroll_x()/128;
+	/*int chk_x = viewer->get_scroll_x()/128;
 	int chk_y = viewer->get_scroll_y()/128;
 	for(int i=0;i<chunk_entities.size();i++) 
 	{
@@ -282,9 +283,9 @@ void MapScene::frame()
 			
 			chunk_provider.unregister_chunk(e_x, e_y);
 		}
-	}
+	}*/
 	
-	for(int dy=-1;dy<=1;dy++)
+	/*for(int dy=-1;dy<=1;dy++)
 	{		
 		int cy = chk_y+dy;
 		if(cy<0) continue;
@@ -315,9 +316,9 @@ void MapScene::frame()
 				}
 			}			
 		}
-	}
+	}*/
 	
-	for(int i=0;i<chunk_entities.size();i++)
+	/*for(int i=0;i<chunk_entities.size();i++)
 	{
 		if(chunk_entities[i]->is_of_class(class_of(GHOST)))
 		{
@@ -330,7 +331,7 @@ void MapScene::frame()
 		chunk_entities[i]->update();
 		chunk_entities[i]->update_visual();
 		chunk_entities[i]->update_position(&camera);
-	}
+	}*/
 	
 	
 	bgSetScroll(1, camera.get_x() & 0xFF, camera.get_y() & 0xFF);
