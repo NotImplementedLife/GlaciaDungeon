@@ -137,7 +137,7 @@ void MapScene::init()
 	//}		
 		
 	BG_PALETTE[0] = Astralbrew::Drawing::Colors::White;
-	BG_PALETTE[1] = Astralbrew::Drawing::Colors::Black;
+	//BG_PALETTE[1] = Astralbrew::Drawing::Colors::Black;
 	//BG_PALETTE[2] = Astralbrew::Drawing::Colors::Blue		
 	
 	objEnable1D();					
@@ -200,8 +200,8 @@ void MapScene::update_arrow()
 	int cx = player->get_attribute()->get_x()+32;
 	int cy = player->get_attribute()->get_y()+32;
 	
-	int ax = cx+(50*_cos)/256;
-	int ay = cy-(50*_sin)/256;
+	int ax = cx+ _cos/4; // 64*_cos/256
+	int ay = cy- _sin/4;
 			
 	OamPool::set_rotation_matrix(1, _cos, -_sin, _sin, _cos);
 	
@@ -259,9 +259,7 @@ void MapScene::frame()
 	{
 		restart();			
 	}
-			
-			
-	
+				
 	if(player_near_portal())
 	{			
 		next_map();			
