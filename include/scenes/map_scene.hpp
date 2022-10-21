@@ -10,6 +10,7 @@
 
 using namespace Astralbrew::World;
 using namespace Astralbrew::Entity;
+using Astralbrew::Text::VwfEngine;
 
 class MosaicIncreaser : public ScheduledTask
 {
@@ -57,6 +58,12 @@ private:
 	Vector<ChunkEntity*> chunk_entities;
 	
 	int mm=0, ss=0;
+	
+	bool reports = false;
+	
+	VwfEngine vwf = VwfEngine(Astralbrew::Resources::Fonts::default_8x16);
+	Address report_txt_addr;
+	
 public:		
 	MapScene(const MapData* md = nullptr);	
 	void load_mapstat(const MapData* md);		
@@ -79,7 +86,9 @@ public:
 	
 	virtual void frame() override;
 	
-	void open_reports();
+	void open_reports(int code);
+	
+	void run_reports();
 	
 	~MapScene();	
 };

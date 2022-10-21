@@ -288,7 +288,7 @@ void MapScene::on_key_down(int keys)
 void MapScene::restart() {
 	const MapData* mapdata_bak = mapdata;
 	
-	open_reports();
+	open_reports(1); 
 	
 	while(1) VBlankIntrWait();
 	//close()->next(new MapScene(mapdata_bak));
@@ -309,10 +309,10 @@ bool MapScene::player_touches_ghost(Sprite* g) const
 }
 
 void MapScene::frame()
-{		
+{			
 	if(player->has_fallen())
 	{
-		restart();			
+		open_reports(1); 
 	}
 				
 	if(player_near_portal())
@@ -387,7 +387,7 @@ void MapScene::frame()
 			((Ghost*)chunk_entities[i])->read_player_pos(player);
 			if(player_touches_ghost(chunk_entities[i]))
 			{
-				restart();
+				open_reports(2); 
 			}
 		}
 		chunk_entities[i]->update();
@@ -411,19 +411,62 @@ void MapScene::frame()
 }
 
 
-void MapScene::open_reports()
+void MapScene::open_reports(int code)
 {
 	player->get_attribute()->set_x(-64);
 	OamPool::deploy();
-	bgInit(1, BgSize::Text256x512, BgPaletteType::Pal4bit, 0, 1);
-	//bgSetPriority(2,1);
+	bgInit(1, BgSize::Text256x512, BgPaletteType::Pal4bit, 0, 1);	
 	dmaCopy(end_level_screenTiles, (void*)0x06001800, end_level_screenTilesLen);
 	dmaCopy(end_level_screenMap, bgGetMapPtr(1), end_level_screenMapLen);
 	dmaCopy(end_level_screenPal, &BG_PALETTE[0x90], end_level_screenPalLen);
 	
 	short* buff = (short*)bgGetMapPtr(1);
-	for(int i=0;i<640;i++) buff[i]|=0x00C0;
+	for(int i=0;i<640;i++) buff[i]|=0x00C0;	
 	
+	if(code!=0) BG_PALETTE[0x92] = Colors::Red;
+	
+	
+	bgSetScroll(1,0,-160);
+	bgSetScroll(0,0,-160);
+	bgUpdate();
+	
+	bgInit(0, BgSize::Text256x256, BgPaletteType::Pal4bit, 0, 7);
+	vwf.set_render_space((void*)0x06006480,10,22);
+	VwfEngine::prepare_map(vwf, bgGetMapPtr(0), 32, 4, 6, 0xA);
+	
+	BG_PALETTE[0xA1] = Colors::Green;
+	BG_PALETTE[0xA2] = Colors::Red;
+	BG_PALETTE[0xA3] = Colors::White;
+	BG_PALETTE[0xA4] = Colors::Yellow;
+	
+	if(code!=0)
+	{
+		vwf.put_text("                    Game Over...\n", Pal4bit, SolidColorBrush(0x2));
+		if(code==1)
+			vwf.put_text("You fell out of the ice platform.\n", Pal4bit, SolidColorBrush(0x3));
+		else if(code==2)
+			vwf.put_text("A ghost attacked you.\n", Pal4bit, SolidColorBrush(0x3));		
+	}
+	
+	for(int i=0;i<40;i++)
+	{
+		VBlankIntrWait();
+		bgScroll(1,0,4);
+		bgScroll(0,0,4);
+		bgUpdate();
+		if(i==10)
+		{
+			if(code!=0)
+				vwf.put_text("\n   A - Restart\b   B - Back to title", Pal4bit, SolidColorBrush(0x4));
+		}
+	}			
+	
+	reports = true;
+	
+	while(1)
+	{
+		VBlankIntrWait();
+	}
 }
 
 
