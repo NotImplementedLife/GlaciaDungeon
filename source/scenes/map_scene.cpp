@@ -246,6 +246,13 @@ bool MapScene::player_near_portal()
 	return is_in_circle(x,y,10);
 }
 
+bool MapScene::player_touches_ghost(Sprite* g) const
+{
+	int x = player->get_px() - g->pos_x();
+	int y = player->get_py() - g->pos_y();
+	return is_in_circle(x,y,12);
+}
+
 void MapScene::frame()
 {		
 	if(player->has_fallen())
@@ -267,7 +274,7 @@ void MapScene::frame()
 	
 	viewer->set_scroll(camera.get_x(), camera.get_y());
 	
-	/*int chk_x = viewer->get_scroll_x()/128;
+	int chk_x = viewer->get_scroll_x()/128;
 	int chk_y = viewer->get_scroll_y()/128;
 	for(int i=0;i<chunk_entities.size();i++) 
 	{
@@ -283,9 +290,9 @@ void MapScene::frame()
 			
 			chunk_provider.unregister_chunk(e_x, e_y);
 		}
-	}*/
+	}
 	
-	/*for(int dy=-1;dy<=1;dy++)
+	for(int dy=-1;dy<=1;dy++)
 	{		
 		int cy = chk_y+dy;
 		if(cy<0) continue;
@@ -316,14 +323,14 @@ void MapScene::frame()
 				}
 			}			
 		}
-	}*/
+	}
 	
-	/*for(int i=0;i<chunk_entities.size();i++)
+	for(int i=0;i<chunk_entities.size();i++)
 	{
 		if(chunk_entities[i]->is_of_class(class_of(GHOST)))
 		{
 			((Ghost*)chunk_entities[i])->read_player_pos(player);
-			if(chunk_entities[i]->touches(player))
+			if(player_touches_ghost(chunk_entities[i]))
 			{
 				restart();
 			}
@@ -331,7 +338,7 @@ void MapScene::frame()
 		chunk_entities[i]->update();
 		chunk_entities[i]->update_visual();
 		chunk_entities[i]->update_position(&camera);
-	}*/
+	}
 	
 	
 	bgSetScroll(1, camera.get_x() & 0xFF, camera.get_y() & 0xFF);

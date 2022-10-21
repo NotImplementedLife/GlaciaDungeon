@@ -60,6 +60,8 @@ public:
 	
 	void update_arrow();		
 	
+	bool player_touches_ghost(Sprite* g) const;
+	
 	virtual void on_key_held(int keys) override;
 	
 	virtual void on_key_down(int keys) override;
