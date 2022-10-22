@@ -26,8 +26,8 @@ include $(DEVKITARM)/gba_rules
 #---------------------------------------------------------------------------------
 TARGET		:= $(notdir $(CURDIR))
 BUILD		:= build
-SOURCES		:= source source/scenes source/data source/sprites
-INCLUDES	:= include include/scenes include/data include/sprites include/levels maps
+SOURCES		:= source source/scenes source/data source/sprites source/utils
+INCLUDES	:= include include/scenes include/data include/sprites include/levels include/utils maps
 DATA		:=
 MUSIC		:=
 GRAPHICS    := gfx
@@ -35,7 +35,6 @@ MAPS        := maps
 
 ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
 LANGS_MAKE  := $(shell python $(ROOT_DIR)/tools/languages.py $(ROOT_DIR)/text/ $(ROOT_DIR)/build/langs.h) 
-LANGS_MAKE  := $(shell echo $(ROOT_DIR) > x.txt)
 
 #---------------------------------------------------------------------------------
 # options for code generation
@@ -43,7 +42,7 @@ LANGS_MAKE  := $(shell echo $(ROOT_DIR) > x.txt)
 ARCH	:=	-mthumb -mthumb-interwork
 
 CFLAGS	:=	-g -Wall -O2\
-		-mcpu=arm7tdmi -mtune=arm7tdmi -gdwarf-4 -std=c++17\
+		-mcpu=arm7tdmi -mtune=arm7tdmi -gdwarf-4 -std=c++17 -DVERSION_DEBUG\
 		-D_DEFAULT_SOURCE \
 		$(ARCH)
 

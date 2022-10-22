@@ -347,18 +347,11 @@ if __name__=="__main__":
 
     header = \
 f"""#pragma once
-
 {messages}
-
 {lang_symbols}
-
 inline static const int LANGUAGES_COUNT = {len(GLOBAL_LANGS.items())};
-
 {msg_symbols}
-
-
 inline static const char* const MESSAGES[{msg_count()}] {messages_list};
-
 extern int CURRENT_LANGUAGE;
 void set_current_language(int LANGUAGE);
 const char* const get_message(int LMSG);
@@ -370,5 +363,3 @@ const char* const get_message(int LMSG);
     f.close()
 
     print(header)
-
-    

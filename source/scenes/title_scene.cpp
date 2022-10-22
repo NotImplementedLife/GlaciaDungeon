@@ -5,6 +5,8 @@
 
 #include "ice_floor.h"
 #include "title.h"
+#include "settings_icon.h"
+#include "menu_scene.hpp"
 
 using namespace Astralbrew::Video;
 
@@ -37,7 +39,7 @@ void parallax()
 }
 
 void TitleScene::init()
-{
+{	
 	Utils::zeroize((void*)0x06000000, 0x18000);
 	
 	for(int i=0;i<64;i++) scrolls[i]=0;
@@ -113,7 +115,8 @@ void TitleScene::on_key_down(int keys)
 		irqDisable(IRQ_HBLANK);
 		irqSet(IRQ_HBLANK, nullptr);
 		REG_BG3HOFS = 0;
-		close()->next(new MapScene(&MAP_STATS[0]));				
+		close()->next(new MenuScene());
+		//close()->next(new MapScene(&MAP_STATS[0]));				
 	}
 }
 
