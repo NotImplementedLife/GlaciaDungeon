@@ -23,7 +23,7 @@ using namespace Astralbrew::Entity;
 
 #include "digits.h"
 #include "end-level-screen.h"
-
+#include "langs.h"
 
 MosaicIncreaser::MosaicIncreaser() : ScheduledTask(5, 16) {}
 
@@ -442,15 +442,16 @@ void MapScene::open_reports(int code)
 	
 	if(code!=0)
 	{
-		vwf.put_text("                    Game Over...\n", Pal4bit, SolidColorBrush(0x2));
+		vwf.put_text(get_message(LMSG_GAME_OVER), Pal4bit, SolidColorBrush(0x2));
+				
 		if(code==1)
-			vwf.put_text("You fell out of the ice platform.\n", Pal4bit, SolidColorBrush(0x3));
+			vwf.put_text(get_message(LMSG_GAME_OVER_PLAYER_FALL), Pal4bit, SolidColorBrush(0x3));
 		else if(code==2)
-			vwf.put_text("A ghost attacked you.\n", Pal4bit, SolidColorBrush(0x3));		
+			vwf.put_text(get_message(LMSG_GAME_OVER_GHOST_ATK), Pal4bit, SolidColorBrush(0x3));		
 	}
 	else 
 	{
-		vwf.put_text("                    Well Done!\n", Pal4bit, SolidColorBrush(0x1));
+		vwf.put_text(get_message(LMSG_LEVEL_COMPLETE), Pal4bit, SolidColorBrush(0x1));		
 	}
 	
 	for(int i=0;i<40;i++)
@@ -462,7 +463,7 @@ void MapScene::open_reports(int code)
 		if(i==10)
 		{
 			if(code!=0)
-				vwf.put_text("\n   A - Restart\b   B - Back to title", Pal4bit, SolidColorBrush(0x4));
+				vwf.put_text(get_message(LMSG_GAME_OVER_OPTIONS), Pal4bit, SolidColorBrush(0x4));
 		}
 	}			
 	
@@ -496,15 +497,15 @@ void MapScene::open_reports(int code)
 					int y = digits[i]->get_attribute()->get_y();
 					if(y<93)
 					{
-						digits[i]->get_attribute()->set_x(x+1);
-						digits[i]->get_attribute()->set_y(y+1);
+						digits[i]->get_attribute()->set_x(x+2);
+						digits[i]->get_attribute()->set_y(y+2);
 					} 
 					else if(i==5)
 					{
-						vwf.put_text("\n                    HI SCORE!!!", Pal4bit, SolidColorBrush(0x4));
+						vwf.put_text(get_message(LMSG_HI_SCORE), Pal4bit, SolidColorBrush(0x4));
 						digits_moving = false;
 						
-						vwf.put_text("\n\n                 A - next level", Pal4bit, SolidColorBrush(0x4));
+						vwf.put_text(get_message(LMSG_NEXT_LEVEL_MSG), Pal4bit, SolidColorBrush(0x4));
 					}
 				}
 			}

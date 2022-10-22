@@ -2,6 +2,17 @@
 
 #include "map_scene.hpp"
 #include "title_scene.hpp"
+#include "langs.h"
 
-//astralbrew_launch_with_splash(MapScene, &MAP_STATS[0])
-astralbrew_launch_with_splash(TitleScene)
+class _SplashScreen : public Astralbrew::Scenes::DefaultSplashScreen {
+	inline void on_end() override {
+		auto* com = this->close();
+		Scene* scene = new TitleScene();
+		com->next(scene);
+	}
+};
+void Astralbrew::World::init_main_scene() 
+{
+	set_current_language(LANG_ES);
+	Astralbrew::World::__MAIN_SCENE__ = new _SplashScreen(); 
+}

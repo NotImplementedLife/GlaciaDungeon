@@ -61,7 +61,7 @@ private:
 	
 	bool reports = false;
 	
-	VwfEngine vwf = VwfEngine(Astralbrew::Resources::Fonts::default_8x16);
+	VwfEngine vwf = VwfEngine(Astralbrew::Resources::Fonts::default_8x16, Astralbrew::Text::ExtendedFontChart::ExtL2);
 	Address report_txt_addr;
 	
 public:		

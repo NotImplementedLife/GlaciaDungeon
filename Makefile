@@ -33,6 +33,10 @@ MUSIC		:=
 GRAPHICS    := gfx
 MAPS        := maps
 
+ROOT_DIR:=$(shell dirname $(realpath $(firstword $(MAKEFILE_LIST))))
+LANGS_MAKE  := $(shell python $(ROOT_DIR)/tools/languages.py $(ROOT_DIR)/text/ $(ROOT_DIR)/build/langs.h) 
+LANGS_MAKE  := $(shell echo $(ROOT_DIR) > x.txt)
+
 #---------------------------------------------------------------------------------
 # options for code generation
 #---------------------------------------------------------------------------------
@@ -149,7 +153,6 @@ $(OUTPUT).gba	:	$(OUTPUT).elf
 $(OUTPUT).elf	:	$(OFILES)
 
 $(OFILES_SOURCES) : $(HFILES)
-
 
 %.maps.s %.maps.h  : %.maps
 	@echo $(notdir $<)
