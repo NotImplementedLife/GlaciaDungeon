@@ -21,15 +21,16 @@ void GBAJamScene::init()
 	dmaCopy(gba_jam_gridMap, bgGetMapPtr(1), gba_jam_gridMapLen);
 	
 	BG_PALETTE[0] = Drawing::Colors::White;
-	
-	
 }
 
+#include<math.h>
+
 void GBAJamScene::frame()
-{
+{	
+	bgSetScroll(0,0,(int)(5*sin(count*0.05f)));
 	bgScroll(1,1,1);
 	bgUpdate();
-	count++;
+	count++;	
 	if(count==180)
 	{
 		close()->next(new TitleScene());
