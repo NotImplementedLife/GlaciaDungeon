@@ -9,10 +9,13 @@ class LanugageSelectScene : public SimpleListScene
 public:
 	LanugageSelectScene() : SimpleListScene()
 	{
-		get_items().push_back(new ListOption("English"));	
-		get_items().push_back(new ListOption("Espanol"));
-		get_items().push_back(new ListOption("Romana"));	
-		get_items().push_back(new ListOption("Russkiy"));
+		int crt_lang = CURRENT_LANGUAGE;
+		for(int i=0;i<LANGUAGES_COUNT;i++)
+		{
+			set_current_language(i);
+			add_item(get_message(LMSG_LANG_NAME));
+		}			
+		set_current_language(crt_lang);
 	}
 	
 	void init() override
@@ -36,9 +39,9 @@ public:
 
 MenuScene::MenuScene() : SimpleListScene()
 {
-	get_items().push_back(new ListOption("New game"));	
-	get_items().push_back(new ListOption("Continue"));
-	get_items().push_back(new ListOption("Language"));	
+	add_item(get_message(LMSG_MENU_NEW_GAME));
+	add_item(get_message(LMSG_MENU_CONTINUE), false);
+	add_item(get_message(LMSG_MENU_LANGUAGE));
 }
 
 void MenuScene::on_selection_done(int index)
