@@ -42,8 +42,8 @@ public:
 
 MenuScene::MenuScene() : SimpleListScene()
 {
-	add_item(get_message(LMSG_MENU_NEW_GAME));
-	add_item(get_message(LMSG_MENU_CONTINUE), false);
+	add_item(get_message(LMSG_MENU_NEW_GAME));	
+	add_item(get_message(LMSG_MENU_CONTINUE), SAVE_FILE.data().current_level != -1);
 	add_item(get_message(LMSG_MENU_LANGUAGE));
 }
 
@@ -52,7 +52,7 @@ void MenuScene::on_selection_done(int index)
 	switch(index)
 	{
 		case 0: close()->next(new MapScene(&MAP_STATS[0])); break;
-		case 1: close()->next(new MapScene(&MAP_STATS[0])); break;
+		case 1: close()->next(new MapScene(&MAP_STATS[SAVE_FILE.data().current_level])); break;
 		case 2: close()->next(new LanugageSelectScene()); break;
 	}	
 }

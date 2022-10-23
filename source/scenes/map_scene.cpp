@@ -509,12 +509,18 @@ void MapScene::open_reports(int code)
 						//assert(SAVE_FILE.data().maps_mmss[i]!=0);						
 						if(mm_ss < SAVE_FILE.data().maps_mmss[j])
 						{							
-							SAVE_FILE.data().maps_mmss[j] = mm_ss;
-							SAVE_FILE.save();
+							SAVE_FILE.data().maps_mmss[j] = mm_ss;							
 							vwf.put_text(get_message(LMSG_HI_SCORE), Pal4bit, SolidColorBrush(0x4));
 						}					
 						else						
 							vwf.put_text("\n", Pal4bit, SolidColorBrush(0x4));
+						
+						if(j<MAP_STATS_COUNT-1)
+							SAVE_FILE.data().current_level = j+1;
+						else
+							SAVE_FILE.data().current_level = MAP_STATS_COUNT-1;
+						SAVE_FILE.save();						
+						
 						digits_moving = false;
 						
 						vwf.put_text(get_message(LMSG_NEXT_LEVEL_MSG), Pal4bit, SolidColorBrush(0x4));

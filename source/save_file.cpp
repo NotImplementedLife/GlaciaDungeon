@@ -17,6 +17,7 @@ void SaveFile::load()
 		data().language = LANG_EN;
 		for(int i=0;i<MAP_STATS_COUNT;i++)
 			data().maps_mmss[i]=0xFFFFFFFF;
+		data().current_level = -1;
 		save();
 		return;
 	}	
