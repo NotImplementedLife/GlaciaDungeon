@@ -16,7 +16,7 @@ void SaveFile::load()
 		data().header = HEADER;
 		data().language = LANG_EN;
 		for(int i=0;i<MAP_STATS_COUNT;i++)
-			data().maps_mmss[i]=0;
+			data().maps_mmss[i]=0xFFFFFFFF;
 		save();
 		return;
 	}	

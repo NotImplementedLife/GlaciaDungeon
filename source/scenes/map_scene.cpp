@@ -18,6 +18,7 @@ using namespace Astralbrew::Entity;
 #include "arrow.h"
 
 #include "ghost.hpp"
+#include "save_file.hpp"
 
 #include "qmath.h"
 
@@ -69,8 +70,9 @@ void MapScene::load_mapstat(const MapData* md)
 }
 
 void MapScene::next_map()
-{
-	int i = mapdata-MAP_STATS;
+{	
+	int i = mapdata-MAP_STATS;	
+	
 	if(i==MAP_STATS_COUNT-1)
 	{
 		close()->next(nullptr);
@@ -502,7 +504,17 @@ void MapScene::open_reports(int code)
 					} 
 					else if(i==5)
 					{
-						vwf.put_text(get_message(LMSG_HI_SCORE), Pal4bit, SolidColorBrush(0x4));
+						int j = (mapdata-MAP_STATS);
+						unsigned mm_ss = (mm<<16)|ss;
+						//assert(SAVE_FILE.data().maps_mmss[i]!=0);						
+						if(mm_ss < SAVE_FILE.data().maps_mmss[j])
+						{							
+							SAVE_FILE.data().maps_mmss[j] = mm_ss;
+							SAVE_FILE.save();
+							vwf.put_text(get_message(LMSG_HI_SCORE), Pal4bit, SolidColorBrush(0x4));
+						}					
+						else						
+							vwf.put_text("\n", Pal4bit, SolidColorBrush(0x4));
 						digits_moving = false;
 						
 						vwf.put_text(get_message(LMSG_NEXT_LEVEL_MSG), Pal4bit, SolidColorBrush(0x4));

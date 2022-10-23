@@ -7,7 +7,7 @@ struct SaveData
 {
 	int header;
 	int language;
-	int maps_mmss[MAP_STATS_COUNT];
+	unsigned maps_mmss[MAP_STATS_COUNT];
 	
 };
 

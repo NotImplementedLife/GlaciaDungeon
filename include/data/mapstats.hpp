@@ -14,29 +14,10 @@ struct MapData
 
 #define cr_map(mapx, sx, sy, fx, fy) { #mapx, mapx, sx, sy, fx, fy }
 
-#include "intro1.mapdata.h"
-#include "intro2.mapdata.h"
-#include "intro3.mapdata.h"
+extern const MapData MAP_STATS[];
 
-#include "map1.mapdata.h"
-#include "map2.mapdata.h"
-#include "map3.mapdata.h"
-#include "map4.mapdata.h"
-#include "map5.mapdata.h"
-
-constexpr MapData MAP_STATS[]
-{	
-	MAP_DATA_intro1,
-	MAP_DATA_intro2,
-	MAP_DATA_intro3,
-	MAP_DATA_map1,
-	MAP_DATA_map2,
-	MAP_DATA_map3,
-	MAP_DATA_map4,
-	MAP_DATA_map5,
-};
-
-#define MAP_STATS_COUNT ((int)(sizeof(MAP_STATS)/sizeof(MapData)))
+//#define MAP_STATS_COUNT ((int)(sizeof(MAP_STATS)/sizeof(MapData)))
+#define MAP_STATS_COUNT 8
 
 
 const MapData* random_map();
