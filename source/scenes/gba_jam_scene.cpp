@@ -23,7 +23,10 @@ void GBAJamScene::init()
 	BG_PALETTE[0] = Drawing::Colors::White;
 }
 
-#include<math.h>
+#include <math.h>
+#include "save_file.hpp"
+#include "menu_scene.hpp"
+#include "langs.h"
 
 void GBAJamScene::frame()
 {	
@@ -33,6 +36,11 @@ void GBAJamScene::frame()
 	count++;	
 	if(count==180)
 	{
+		if(SAVE_FILE.data().language<0)
+		{
+			set_current_language(LANG_EN);
+			close()->next(new LanugageSelectScene(true));
+		}
 		close()->next(new TitleScene());
 	}
 }
