@@ -3,6 +3,7 @@
 #include "title_scene.hpp"
 #include "map_scene.hpp"
 #include "langs.h"
+#include "save_file.hpp"
 
 class LanugageSelectScene : public SimpleListScene
 {
@@ -27,6 +28,8 @@ public:
 	void on_selection_done(int index) override
 	{
 		set_current_language(index);
+		SAVE_FILE.data().language = index;
+		SAVE_FILE.save();
 		close()->next(new MenuScene());
 	}
 	
@@ -51,8 +54,7 @@ void MenuScene::on_selection_done(int index)
 		case 0: close()->next(new MapScene(&MAP_STATS[0])); break;
 		case 1: close()->next(new MapScene(&MAP_STATS[0])); break;
 		case 2: close()->next(new LanugageSelectScene()); break;
-	}
-	
+	}	
 }
 
 void MenuScene::on_cancel_triggered() 

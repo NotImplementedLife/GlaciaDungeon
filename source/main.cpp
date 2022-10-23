@@ -4,6 +4,7 @@
 #include "title_scene.hpp"
 #include "langs.h"
 #include "menu_scene.hpp"
+#include "save_file.hpp"
 
 using namespace Astralbrew::Scenes;
 
@@ -17,6 +18,7 @@ class _SplashScreen : public Astralbrew::Scenes::DefaultSplashScreen {
 
 void Astralbrew::World::init_main_scene() 
 {
-	set_current_language(LANG_EN);
+	SAVE_FILE.load();
+	set_current_language(SAVE_FILE.data().language);
 	Astralbrew::World::__MAIN_SCENE__ = new _SplashScreen(); 
 }
