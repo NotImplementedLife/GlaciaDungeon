@@ -5,13 +5,14 @@
 #include "langs.h"
 #include "menu_scene.hpp"
 #include "save_file.hpp"
+#include "gba_jam_scene.hpp"
 
 using namespace Astralbrew::Scenes;
 
 class _SplashScreen : public Astralbrew::Scenes::DefaultSplashScreen {
 	inline void on_end() override {
 		auto* com = this->close();		
-		Scene* scene = new TitleScene();
+		Scene* scene = new GBAJamScene();
 		com->next(scene);
 	}
 };

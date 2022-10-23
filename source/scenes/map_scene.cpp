@@ -516,7 +516,10 @@ void MapScene::open_reports(int code)
 							vwf.put_text("\n", Pal4bit, SolidColorBrush(0x4));
 						
 						if(j<MAP_STATS_COUNT-1)
-							SAVE_FILE.data().current_level = j+1;
+						{
+							if(SAVE_FILE.data().current_level==-1 || SAVE_FILE.data().current_level<=j)
+								SAVE_FILE.data().current_level = j+1;
+						}
 						else
 							SAVE_FILE.data().current_level = MAP_STATS_COUNT-1;
 						SAVE_FILE.save();						

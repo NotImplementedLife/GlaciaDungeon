@@ -5,6 +5,9 @@
 #include "langs.h"
 #include "save_file.hpp"
 
+using namespace Astralbrew::Video;
+#include "ice_floor.h"
+
 class LanugageSelectScene : public SimpleListScene
 {
 public:
@@ -21,8 +24,21 @@ public:
 	
 	void init() override
 	{
-		SimpleListScene::init();
-		select(CURRENT_LANGUAGE);
+		Utils::zeroize((void*)0x06000010, 0x18000-0x10); 
+		SimpleListScene::init();	
+		bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 6);
+		
+		BG_PALETTE[0] = Astralbrew::Drawing::Colors::Blue;
+		
+		dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, (ice_floorTilesLen-32)/2);
+		dmaCopy(ice_floorPal, &BG_PALETTE[16], (ice_floorPalLen+3)/4*4);
+		
+		for(int i=0;i<1024;i++) bgGetMapPtr(3)[i]=0x600;
+		dmaCopy(ice_floorMap, bgGetMapPtr(3), ice_floorMapLen/4);
+		for(int i=0;i<1024;i++) bgGetMapPtr(3)[i]|=0x1000;
+		bgSetScroll(3,0,140);
+		bgUpdate();	
+		select(CURRENT_LANGUAGE);		
 	}
 	
 	void on_selection_done(int index) override
@@ -44,7 +60,26 @@ MenuScene::MenuScene() : SimpleListScene()
 {
 	add_item(get_message(LMSG_MENU_NEW_GAME));	
 	add_item(get_message(LMSG_MENU_CONTINUE), SAVE_FILE.data().current_level != -1);
+	add_item(get_message(LMSG_MENU_LEVEL_SEL));
 	add_item(get_message(LMSG_MENU_LANGUAGE));
+}
+
+void MenuScene::init()
+{
+	Utils::zeroize((void*)0x06000010, 0x18000-0x10); 
+	SimpleListScene::init();	
+	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 6);
+	
+	BG_PALETTE[0] = Astralbrew::Drawing::Colors::Blue;
+	
+	dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, (ice_floorTilesLen-32)/2);
+	dmaCopy(ice_floorPal, &BG_PALETTE[16], (ice_floorPalLen+3)/4*4);
+	
+	for(int i=0;i<1024;i++) bgGetMapPtr(3)[i]=0x600;
+	dmaCopy(ice_floorMap, bgGetMapPtr(3), ice_floorMapLen/4);
+	for(int i=0;i<1024;i++) bgGetMapPtr(3)[i]|=0x1000;
+	bgSetScroll(3,0,140);
+	bgUpdate();		
 }
 
 void MenuScene::on_selection_done(int index)
@@ -53,7 +88,8 @@ void MenuScene::on_selection_done(int index)
 	{
 		case 0: close()->next(new MapScene(&MAP_STATS[0])); break;
 		case 1: close()->next(new MapScene(&MAP_STATS[SAVE_FILE.data().current_level])); break;
-		case 2: close()->next(new LanugageSelectScene()); break;
+		case 2: break;
+		case 3: close()->next(new LanugageSelectScene()); break;
 	}	
 }
 
