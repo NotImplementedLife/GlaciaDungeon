@@ -24,4 +24,4 @@ void SaveFile::load()
 	StructuredSaveFile<SaveData>::load();
 }
 
-SaveFile SAVE_FILE;
+__attribute__((section(".ewram.savefile"))) SaveFile SAVE_FILE;

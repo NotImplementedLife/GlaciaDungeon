@@ -9,10 +9,11 @@
 
 using namespace Astralbrew::Scenes;
 
-class _SplashScreen : public Astralbrew::Scenes::DefaultSplashScreen {
+class _SplashScreen : public Astralbrew::Scenes::DefaultSplashScreen 
+{
 	inline void on_end() override {
 		auto* com = this->close();		
-		Scene* scene = new GBAJamScene();
+		Scene* scene = new GBAJamScene();				
 		com->next(scene);
 	}
 };
@@ -21,5 +22,5 @@ void Astralbrew::World::init_main_scene()
 {
 	SAVE_FILE.load();
 	set_current_language(SAVE_FILE.data().language);
-	Astralbrew::World::__MAIN_SCENE__ = new _SplashScreen(); 
+	Astralbrew::World::__MAIN_SCENE__ = new _SplashScreen(); 	
 }

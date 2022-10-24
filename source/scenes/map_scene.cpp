@@ -26,6 +26,10 @@ using namespace Astralbrew::Entity;
 #include "end-level-screen.h"
 #include "langs.h"
 
+#include <maxmod.h>
+#include "soundbank.h"
+#include "soundbank_bin.h"
+
 MosaicIncreaser::MosaicIncreaser() : ScheduledTask(5, 16) {}
 
 void MosaicIncreaser::action()
@@ -203,6 +207,12 @@ void MapScene::init()
 
 	portal_updater = new PortalUpdater(finish_portal, portal_tiles);
 	schedule_task(portal_updater);			
+	
+	irqSet(IRQ_VBLANK, mmVBlank);
+	irqEnable(IRQ_VBLANK);
+	
+	mmInitDefault((mm_addr)soundbank_bin, 2);
+	mmStart(MOD_MAP_THEME, MM_PLAY_LOOP);
 }	
 
 void MapScene::increment_timer()
@@ -307,8 +317,13 @@ bool MapScene::player_touches_ghost(Sprite* g) const
 	return is_in_circle(x,y,12);
 }
 
+void MapScene::before_frame()
+{
+	mmFrame();	
+}
+
 void MapScene::frame()
-{			
+{					
 	if(player->has_fallen())
 	{
 		open_reports(1); 
@@ -459,6 +474,7 @@ void MapScene::open_reports(int code)
 	for(int i=0;i<40;i++)
 	{
 		VBlankIntrWait();
+		mmFrame();
 		bgScroll(1,0,4);
 		bgScroll(0,0,4);
 		bgUpdate();
@@ -477,6 +493,7 @@ void MapScene::open_reports(int code)
 	while(1)
 	{
 		VBlankIntrWait();
+		mmFrame();
 		
 		scanKeys();
 		int keys = keysDown();
@@ -552,4 +569,6 @@ MapScene::~MapScene()
 		delete chunk_entities[i];
 	for(int i=0;i<6;i++)
 		delete digits[i];
+	irqDisable(IRQ_VBLANK);
+	irqSet( IRQ_VBLANK, 0 );	
 }

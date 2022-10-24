@@ -9,6 +9,7 @@ using namespace Astralbrew::Video;
 
 void GBAJamScene::init() 
 {
+	#ifdef GBAJAM
 	Video::setMode(0);
 	bgInit(0, BgSize::Text256x256, BgPaletteType::Pal4bit, 0, 31);
 	dmaCopy(gba_jam_logoTiles, (void*)0x06000000, gba_jam_logoTilesLen);
@@ -21,6 +22,7 @@ void GBAJamScene::init()
 	dmaCopy(gba_jam_gridMap, bgGetMapPtr(1), gba_jam_gridMapLen);
 	
 	BG_PALETTE[0] = Drawing::Colors::White;
+	#endif
 }
 
 #include <math.h>
@@ -30,17 +32,21 @@ void GBAJamScene::init()
 
 void GBAJamScene::frame()
 {	
+	#ifdef GBAJAM
 	bgSetScroll(0,0,(int)(5*sin(count*0.05f)));
 	bgScroll(1,1,1);
 	bgUpdate();
 	count++;	
 	if(count==180)
 	{
+	#endif
 		if(SAVE_FILE.data().language<0)
 		{
 			set_current_language(LANG_EN);
 			close()->next(new LanugageSelectScene(true));
 		}
 		close()->next(new TitleScene());
+	#ifdef GBAJAM
 	}
+	#endif
 }

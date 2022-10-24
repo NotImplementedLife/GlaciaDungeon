@@ -1,5 +1,7 @@
 #pragma once
 
+#define GBAJAM
+
 #include <Astralbrew>
 
 using namespace Astralbrew;

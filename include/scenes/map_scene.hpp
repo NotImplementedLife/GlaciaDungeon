@@ -76,6 +76,8 @@ public:
 	
 	bool player_touches_ghost(Sprite* g) const;
 	
+	virtual void before_frame() override;
+	
 	virtual void on_key_held(int keys) override;
 	
 	virtual void on_key_down(int keys) override;
