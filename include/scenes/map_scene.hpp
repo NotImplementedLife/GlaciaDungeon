@@ -65,8 +65,10 @@ private:
 	VwfEngine vwf = VwfEngine(Astralbrew::Resources::Fonts::default_8x16, Astralbrew::Text::ExtendedFontChart::ExtL2);
 	Address report_txt_addr;
 	
+	bool chillin = false;
+	
 public:		
-	MapScene(const MapData* md = nullptr);	
+	MapScene(const MapData* md = nullptr, bool chillin = false);	
 	void load_mapstat(const MapData* md);		
 	void next_map();	
 	virtual void init() override;		

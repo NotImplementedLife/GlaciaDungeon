@@ -122,7 +122,7 @@ void MapSelectScene::on_key_down(int keys)
 		irqSet(IRQ_HBLANK, nullptr);
 		
 		int bak_index = index;
-		close()->next(new MapScene(&MAP_STATS[bak_index]));
+		close()->next(new MapScene(&MAP_STATS[bak_index], true));
 	}
 }
 

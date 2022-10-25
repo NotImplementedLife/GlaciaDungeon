@@ -29,6 +29,7 @@ using namespace Astralbrew::Entity;
 #include <maxmod.h>
 #include "soundbank.h"
 #include "soundbank_bin.h"
+#include "title_scene.hpp"
 
 MosaicIncreaser::MosaicIncreaser() : ScheduledTask(5, 16) {}
 
@@ -59,7 +60,7 @@ public:
 	}
 };
 
-MapScene::MapScene(const MapData* md) : mapdata(md) { }	
+MapScene::MapScene(const MapData* md, bool chillin) : mapdata(md), chillin(chillin) { }	
 
 void MapScene::load_mapstat(const MapData* md)
 {		
@@ -77,11 +78,12 @@ void MapScene::next_map()
 {	
 	int i = mapdata-MAP_STATS;	
 	
+	bool chillin_bak = chillin;
 	if(i==MAP_STATS_COUNT-1)
 	{
-		close()->next(nullptr);
+		close()->next(new TitleScene());
 	}		
-	close()->next(new MapScene(&MAP_STATS[i+1]));
+	close()->next(new MapScene(&MAP_STATS[i+1], chillin_bak));
 }
 
 void MapScene::init()
@@ -146,19 +148,22 @@ void MapScene::init()
 	dmaCopy(digitsPal, &SPRITE_PALETTE[0xE0], digitsPalLen);
 	
 	
-	for(int i=0;i<6;i++)
+	if(!chillin)
 	{
-		digits_addr[i].set_value((u8*)digits_tiles.get_value());
-		digits[i] = Sprite::quick16(&digits_addr[i], ObjSize::SIZE_8x8, ANCHOR_CENTER);	
-		digits[i]->get_attribute()->set_palette_number(0xE);
-		digits[i]->set_position(8+8*(i+i/3),8);
-		digits[i]->update_visual();
-		digits[i]->update_position(nullptr);		
-	}	
-	digits_addr[5].set_value((u8*)digits_tiles.get_value() + 32*10);
-	digits[5]->set_position(8*4,8);
-	digits[5]->update_visual();
-	digits[5]->update_position(nullptr);		
+		for(int i=0;i<6;i++)
+		{
+			digits_addr[i].set_value((u8*)digits_tiles.get_value());
+			digits[i] = Sprite::quick16(&digits_addr[i], ObjSize::SIZE_8x8, ANCHOR_CENTER);	
+			digits[i]->get_attribute()->set_palette_number(0xE);
+			digits[i]->set_position(8+8*(i+i/3),8);
+			digits[i]->update_visual();
+			digits[i]->update_position(nullptr);		
+		}	
+		digits_addr[5].set_value((u8*)digits_tiles.get_value() + 32*10);
+		digits[5]->set_position(8*4,8);
+		digits[5]->update_visual();
+		digits[5]->update_position(nullptr);		
+	}
 	
 	
 	
@@ -210,7 +215,7 @@ void MapScene::init()
 	
 	irqSet(IRQ_VBLANK, mmVBlank);
 	irqEnable(IRQ_VBLANK);
-	
+		
 	mmInitDefault((mm_addr)soundbank_bin, 2);
 	mmStart(MOD_MAP_THEME, MM_PLAY_LOOP);	
 }	
@@ -222,6 +227,7 @@ void MapScene::before_frame()
 
 void MapScene::increment_timer()
 {
+	if(chillin) return;
 	ss++;
 	s0++;
 	if(s0==10) s0=0, s1++;
@@ -312,9 +318,10 @@ void MapScene::on_key_down(int keys)
 }
 
 void MapScene::restart() {
+	bool chillin_bak = chillin;
 	const MapData* mapdata_bak = mapdata;
 		
-	close()->next(new MapScene(mapdata_bak));
+	close()->next(new MapScene(mapdata_bak, chillin_bak));
 }
 
 bool MapScene::player_near_portal()
@@ -468,6 +475,8 @@ void MapScene::open_reports(int code)
 	
 	if(code!=0)
 	{
+		mmStop();
+		mmStart(MOD_GAME_OVER_THEME, MM_PLAY_ONCE);
 		vwf.put_text(get_message(LMSG_GAME_OVER), Pal4bit, SolidColorBrush(0x2));
 				
 		if(code==1)
@@ -476,8 +485,12 @@ void MapScene::open_reports(int code)
 			vwf.put_text(get_message(LMSG_GAME_OVER_GHOST_ATK), Pal4bit, SolidColorBrush(0x3));		
 	}
 	else 
-	{
+	{		
 		vwf.put_text(get_message(LMSG_LEVEL_COMPLETE), Pal4bit, SolidColorBrush(0x1));		
+		if(chillin)
+		{
+			vwf.put_text(get_message(LMSG_NEXT_LEVEL_MSG), Pal4bit, SolidColorBrush(0x4));
+		}
 	}
 	
 	for(int i=0;i<40;i++)
@@ -489,16 +502,23 @@ void MapScene::open_reports(int code)
 		bgUpdate();
 		if(i==10)
 		{
-			if(code!=0)
+			if(code!=0)				
 				vwf.put_text(get_message(LMSG_GAME_OVER_OPTIONS), Pal4bit, SolidColorBrush(0x4));
 		}
-	}			
+	}				
+	
 	
 	reports = true;
-	for(int i=0;i<6;i++)
-		digits[i]->get_attribute()->set_priority(0);
+	
+	if(!chillin)
+	{
+		for(int i=0;i<6;i++)		
+			digits[i]->get_attribute()->set_priority(0);
+	}
 	
 	bool digits_moving = true;
+	
+	if(chillin) digits_moving = false;
 	while(1)
 	{
 		VBlankIntrWait();
@@ -530,28 +550,30 @@ void MapScene::open_reports(int code)
 					} 
 					else if(i==5)
 					{
-						int j = (mapdata-MAP_STATS);
-						unsigned mm_ss = (mm<<16)|ss;
-						//assert(SAVE_FILE.data().maps_mmss[i]!=0);						
-						if(mm_ss < SAVE_FILE.data().maps_mmss[j])
-						{							
-							SAVE_FILE.data().maps_mmss[j] = mm_ss;							
-							vwf.put_text(get_message(LMSG_HI_SCORE), Pal4bit, SolidColorBrush(0x4));
-						}					
-						else						
-							vwf.put_text("\n", Pal4bit, SolidColorBrush(0x4));
-						
-						if(j<MAP_STATS_COUNT-1)
+						if(!chillin) 
 						{
-							if(SAVE_FILE.data().current_level==-1 || SAVE_FILE.data().current_level<=j)
-								SAVE_FILE.data().current_level = j+1;
-						}
-						else
-							SAVE_FILE.data().current_level = MAP_STATS_COUNT-1;
-						SAVE_FILE.save();						
-						
-						digits_moving = false;
-						
+							int j = (mapdata-MAP_STATS);
+							unsigned mm_ss = (mm<<16)|ss;
+							//assert(SAVE_FILE.data().maps_mmss[i]!=0);						
+							if(mm_ss < SAVE_FILE.data().maps_mmss[j])
+							{							
+								SAVE_FILE.data().maps_mmss[j] = mm_ss;							
+								vwf.put_text(get_message(LMSG_HI_SCORE), Pal4bit, SolidColorBrush(0x4));
+							}					
+							else						
+								vwf.put_text("\n", Pal4bit, SolidColorBrush(0x4));
+							
+							if(j<MAP_STATS_COUNT-1)
+							{
+								if(SAVE_FILE.data().current_level==-1 || SAVE_FILE.data().current_level<=j)
+									SAVE_FILE.data().current_level = j+1;
+							}
+							else
+								SAVE_FILE.data().current_level = MAP_STATS_COUNT-1;
+							SAVE_FILE.save();						
+							
+							digits_moving = false;
+						}						
 						vwf.put_text(get_message(LMSG_NEXT_LEVEL_MSG), Pal4bit, SolidColorBrush(0x4));
 					}
 				}
