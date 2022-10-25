@@ -5,6 +5,7 @@
 #include "map_scene.hpp"
 
 #include "a_select.h"
+#include "menu_scene.hpp"
 
 using namespace Astralbrew;
 using namespace Astralbrew::Video;
@@ -66,6 +67,13 @@ void MapSelectScene::init()
 	generate_map();
 }
 
+#include <maxmod.h>
+
+void MapSelectScene::before_frame()
+{
+	if(mmActive()) mmFrame();
+}
+
 void MapSelectScene::frame()
 {		
 	a_select->set_position(230,155+cnt/10);
@@ -121,8 +129,14 @@ void MapSelectScene::on_key_down(int keys)
 		irqDisable(IRQ_HBLANK);
 		irqSet(IRQ_HBLANK, nullptr);
 		
-		int bak_index = index;
+		unload_menu_master_sound();
+		
+		int bak_index = index;		
 		close()->next(new MapScene(&MAP_STATS[bak_index], true));
+	}
+	else if(keys & KEY_B)
+	{
+		close()->next(new MenuScene(2));
 	}
 }
 
@@ -135,6 +149,12 @@ void MapSelectScene::generate_map()
 	
 	for(int y=-half_h;y<half_h;y++)
 	{
+		if(y&7)
+		{
+			VBlankIntrWait();
+			this->before_frame();
+			this->frame();
+		}
 		for(int x=-half_w;x<half_w;x++)
 		{
 			if(start_x+x>=0 && start_x+x<map.tiles_width() &&
@@ -159,5 +179,7 @@ MapSelectScene::~MapSelectScene()
 {
 	delete a_select;
 	OamPool::reset();
-	Utils::zeroize((void*)0x06000000, 0x18000);
+	Utils::zeroize((void*)0x06000000, 0x18000);	
+	irqDisable(IRQ_HBLANK);
+	irqSet(IRQ_HBLANK, nullptr);
 }

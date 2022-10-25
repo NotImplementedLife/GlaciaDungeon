@@ -16,6 +16,7 @@ class SaveFile : public Astralbrew::SaveTool::StructuredSaveFile<SaveData>
 public:
 	SaveFile();
 	void load();		
+	void init_data();
 };
 
 extern SaveFile SAVE_FILE;

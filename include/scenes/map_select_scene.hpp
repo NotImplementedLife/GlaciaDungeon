@@ -18,6 +18,7 @@ private:
 	int sgn = 1;
 public:
 	virtual void init() override;
+	virtual void before_frame() override;
 	virtual void frame() override;
 	virtual void on_key_down(int keys) override;
 	~MapSelectScene();

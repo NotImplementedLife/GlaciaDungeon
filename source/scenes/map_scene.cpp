@@ -476,7 +476,7 @@ void MapScene::open_reports(int code)
 	if(code!=0)
 	{
 		mmStop();
-		mmStart(MOD_GAME_OVER_THEME, MM_PLAY_ONCE);
+		mmStart(MOD_GAME_OVER_THEME, MM_PLAY_ONCE);		
 		vwf.put_text(get_message(LMSG_GAME_OVER), Pal4bit, SolidColorBrush(0x2));
 				
 		if(code==1)
@@ -486,6 +486,9 @@ void MapScene::open_reports(int code)
 	}
 	else 
 	{		
+		mmStop();
+		mmStart(MOD_LEVEL_COMPLETE_THEME, MM_PLAY_ONCE);
+		mmSetModuleTempo(1536);
 		vwf.put_text(get_message(LMSG_LEVEL_COMPLETE), Pal4bit, SolidColorBrush(0x1));		
 		if(chillin)
 		{

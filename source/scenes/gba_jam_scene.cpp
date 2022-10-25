@@ -43,7 +43,7 @@ void GBAJamScene::frame()
 		if(SAVE_FILE.data().language<0)
 		{
 			set_current_language(LANG_EN);
-			close()->next(new LanugageSelectScene(true));
+			close()->next(new LanguageSelectScene(true));
 		}
 		close()->next(new TitleScene());
 	#ifdef GBAJAM
