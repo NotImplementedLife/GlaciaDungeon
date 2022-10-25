@@ -58,6 +58,7 @@ private:
 	Vector<ChunkEntity*> chunk_entities;
 	
 	int mm=0, ss=0;
+	int s0=0, s1=0, m0=0, m1=0, m2=0; 
 	
 	bool reports = false;
 	

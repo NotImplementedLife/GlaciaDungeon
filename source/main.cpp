@@ -6,6 +6,7 @@
 #include "menu_scene.hpp"
 #include "save_file.hpp"
 #include "gba_jam_scene.hpp"
+#include "map_select_scene.hpp"
 
 using namespace Astralbrew::Scenes;
 
@@ -23,4 +24,5 @@ void Astralbrew::World::init_main_scene()
 	SAVE_FILE.load();
 	set_current_language(SAVE_FILE.data().language);
 	Astralbrew::World::__MAIN_SCENE__ = new _SplashScreen(); 	
+	//Astralbrew::World::__MAIN_SCENE__ = new MapSelectScene();
 }

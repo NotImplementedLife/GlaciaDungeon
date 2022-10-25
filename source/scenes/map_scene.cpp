@@ -215,25 +215,39 @@ void MapScene::init()
 	mmStart(MOD_MAP_THEME, MM_PLAY_LOOP);
 }	
 
+void MapScene::before_frame()
+{
+	mmFrame();	
+}
+
 void MapScene::increment_timer()
 {
 	ss++;
+	s0++;
+	if(s0==10) s0=0, s1++;
+	
 	if(ss==60)
-	{
+	{		
 		mm++;
-		digits_addr[0].set_value((u8*)digits_tiles.get_value() + 32*(mm/100));		
-		digits_addr[1].set_value((u8*)digits_tiles.get_value() + 32*(mm/10%10));
-		digits_addr[2].set_value((u8*)digits_tiles.get_value() + 32*(mm%10));
+		
+		m0++;
+		if(m0==10) m0=0, m1++;
+		if(m1==10) m1=0, m2++;
+		
+		digits_addr[0].set_value((u8*)digits_tiles.get_value() + 32*m2);		
+		digits_addr[1].set_value((u8*)digits_tiles.get_value() + 32*m1);
+		digits_addr[2].set_value((u8*)digits_tiles.get_value() + 32*m0);
 		
 		digits[0]->update_visual();
 		digits[1]->update_visual();
 		digits[2]->update_visual();
 		
 		ss=0;
-	}
+		s0=s1=0;
+	}	
 	
-	digits_addr[3].set_value((u8*)digits_tiles.get_value() + 32*(ss/10));		
-	digits_addr[4].set_value((u8*)digits_tiles.get_value() + 32*(ss%10));
+	digits_addr[3].set_value((u8*)digits_tiles.get_value() + 32*s1);		
+	digits_addr[4].set_value((u8*)digits_tiles.get_value() + 32*s0);
 		
 	digits[3]->update_visual();
 	digits[4]->update_visual();	
@@ -315,11 +329,6 @@ bool MapScene::player_touches_ghost(Sprite* g) const
 	int x = player->get_px() - g->pos_x();
 	int y = player->get_py() - g->pos_y();
 	return is_in_circle(x,y,12);
-}
-
-void MapScene::before_frame()
-{
-	mmFrame();	
 }
 
 void MapScene::frame()
@@ -555,10 +564,11 @@ void MapScene::open_reports(int code)
 		}
 	}
 }
-
+ 
 
 MapScene::~MapScene() 
-{
+{	
+	mmStop();
 	delete portal_updater;
 	delete finish_portal;
 	delete player;
@@ -568,7 +578,7 @@ MapScene::~MapScene()
 	for(int i=0;i<chunk_entities.size();i++)
 		delete chunk_entities[i];
 	for(int i=0;i<6;i++)
-		delete digits[i];
-	irqDisable(IRQ_VBLANK);
-	irqSet( IRQ_VBLANK, 0 );	
+		delete digits[i];		
+	irqSet(IRQ_VBLANK, 0);	
+	OamPool::reset();	
 }

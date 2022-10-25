@@ -157,5 +157,5 @@ void TitleScene::launch_map()
 TitleScene::~TitleScene()
 {
 	delete player;	
-	OamPool::reset();
+	//OamPool::reset();
 }

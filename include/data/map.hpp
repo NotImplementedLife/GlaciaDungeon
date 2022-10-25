@@ -13,7 +13,7 @@ class Map
 {
 private:
 	const MapSource& map_source;
-public:
+public:	
 	Map(const MapSource& map_source);
 	
 	int operator() (int x, int y) const;	
