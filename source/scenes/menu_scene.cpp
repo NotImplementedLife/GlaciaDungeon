@@ -2,6 +2,7 @@
 
 #include "title_scene.hpp"
 #include "map_scene.hpp"
+#include "map_select_scene.hpp"
 #include "langs.h"
 #include "save_file.hpp"
 
@@ -91,7 +92,7 @@ void MenuScene::on_selection_done(int index)
 	{
 		case 0: close()->next(new MapScene(&MAP_STATS[0])); break;
 		case 1: close()->next(new MapScene(&MAP_STATS[SAVE_FILE.data().current_level])); break;
-		case 2: break;
+		case 2: close()->next(new MapSelectScene()); break;
 		case 3: close()->next(new LanugageSelectScene()); break;
 	}	
 }

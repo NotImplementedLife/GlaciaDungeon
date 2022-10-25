@@ -6,10 +6,9 @@ class ChunkProvider
 {
 private:
 	int seed;
-	int chunks[8][16];
+	int chunks[8][64];
 	
-	int exists(int chk_id) const;
-	//Astralbrew::Vector<int> chunks;	
+	int exists(int chk_id) const;	
 public:
 	ChunkProvider();
 	ChunkProvider(int seed);

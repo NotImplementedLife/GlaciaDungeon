@@ -212,7 +212,7 @@ void MapScene::init()
 	irqEnable(IRQ_VBLANK);
 	
 	mmInitDefault((mm_addr)soundbank_bin, 2);
-	mmStart(MOD_MAP_THEME, MM_PLAY_LOOP);
+	mmStart(MOD_MAP_THEME, MM_PLAY_LOOP);	
 }	
 
 void MapScene::before_frame()
@@ -568,6 +568,7 @@ void MapScene::open_reports(int code)
 
 MapScene::~MapScene() 
 {	
+	mmPause();
 	mmStop();
 	delete portal_updater;
 	delete finish_portal;

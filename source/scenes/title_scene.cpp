@@ -8,6 +8,10 @@
 #include "settings_icon.h"
 #include "menu_scene.hpp"
 
+#include "soundbank.h"
+#include "soundbank_bin.h"
+#include <maxmod.h>
+
 using namespace Astralbrew::Video;
 
 __attribute__((section(".ewram.title_parallax.scrolls"))) short scrolls[64];
@@ -90,6 +94,17 @@ void TitleScene::init()
 	player->get_attribute()->set_rotation_scaling(true);
 	player->get_attribute()->set_affine_matrix(0);
 	OamPool::set_rotation_matrix(0, 256, 0, 0, 256);
+	
+	irqSet(IRQ_VBLANK, mmVBlank);
+	irqEnable(IRQ_VBLANK);
+	
+	mmInitDefault((mm_addr)soundbank_bin, 4);
+	mmStart(MOD_TITLE_THEME, MM_PLAY_LOOP);
+}
+	
+void TitleScene::before_frame()
+{
+	mmFrame();
 }
 	
 void TitleScene::frame()
@@ -150,12 +165,15 @@ void TitleScene::on_key_held(int keys)
 }
 
 void TitleScene::launch_map()
-{
+{	
 	close()->next(new MapScene());
 }
 
 TitleScene::~TitleScene()
 {
+	mmPause();
+	mmStop();
+	irqSet(IRQ_VBLANK, 0);
 	delete player;	
-	//OamPool::reset();
+	//OamPool::reset();	
 }

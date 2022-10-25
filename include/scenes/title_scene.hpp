@@ -18,6 +18,8 @@ public:
 	
 	void frame() override;
 	
+	void before_frame() override;
+	
 	void on_key_down(int keys) override;
 	
 	void on_key_held(int keys) override;

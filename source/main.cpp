@@ -23,6 +23,5 @@ void Astralbrew::World::init_main_scene()
 {
 	SAVE_FILE.load();
 	set_current_language(SAVE_FILE.data().language);
-	Astralbrew::World::__MAIN_SCENE__ = new _SplashScreen(); 	
-	//Astralbrew::World::__MAIN_SCENE__ = new MapSelectScene();
+	Astralbrew::World::__MAIN_SCENE__ = new _SplashScreen(); 		
 }
