@@ -38,12 +38,14 @@ def read_map(file):
     w = struct.unpack('i', f.read(4))[0]
     h = struct.unpack('i', f.read(4))[0]
     src = f.read()
+    print(type(src))
     return MapSource(w,h,src) 
 
 #def gen_c(symbol, 
 
 def gen_s(symbol, data):    
     str_dat=".word "
+    data = bytearray(data)
     if(len(data)%2==1):
         data.append(0)
     data=data.hex()

@@ -17,7 +17,7 @@ struct MapData
 extern const MapData MAP_STATS[];
 
 //#define MAP_STATS_COUNT ((int)(sizeof(MAP_STATS)/sizeof(MapData)))
-#define MAP_STATS_COUNT 8
+#define MAP_STATS_COUNT 23
 
 
 const MapData* random_map();
