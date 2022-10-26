@@ -67,9 +67,11 @@ static const int feet_pos[112]
 	415 % 64 - 32, 251 % 64 - 32,
 };
 
+#include "fader.h"
+
 Player::Player() : Sprite(ObjSize::SIZE_64x64, ObjBitDepth::_8bit, 1, $(player))
 {	
-	dmaCopy(player_sheetPal, SPRITE_PALETTE, player_sheetPalLen);	
+	dmaCopy(player_sheetPal, SH_SPRITE_PALETTE, player_sheetPalLen);	
 	gfx_addr.set_value((void*)0x06010080);
 	set_current_frame(0,0);		
 	
@@ -83,9 +85,7 @@ Player::Player() : Sprite(ObjSize::SIZE_64x64, ObjBitDepth::_8bit, 1, $(player))
 	//set_anchor(ANCHOR_CENTER);	
 	
 	px = 120;
-	py = 80;
-	
-	update_visual();
+	py = 80;	
 }
 
 void Player::set_movement_bounds(int x, int y, int w, int h)

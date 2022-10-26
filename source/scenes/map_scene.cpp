@@ -31,6 +31,8 @@ using namespace Astralbrew::Entity;
 #include "soundbank_bin.h"
 #include "title_scene.hpp"
 
+#include "fader.h"
+
 MosaicIncreaser::MosaicIncreaser() : ScheduledTask(5, 16) {}
 
 void MosaicIncreaser::action()
@@ -108,16 +110,16 @@ void MapScene::init()
 	vram_chr_1.reserve(&ice_tiles, ice_tilesTilesLen);
 	ice_tiles.write(ice_tilesTiles, ice_tilesTilesLen);
 			
-	dmaCopy(ice_tilesPal, BG_PALETTE, (ice_tilesPalLen+3)/4*4);
+	dmaCopy(ice_tilesPal, SH_BG_PALETTE, (ice_tilesPalLen+3)/4*4);
 	
 	dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, ice_floorTilesLen-32);
 	dmaCopy(ice_floorMap, bgGetMapPtr(2), ice_floorMapLen);
-	dmaCopy(ice_floorPal, &BG_PALETTE[128], ice_floorPalLen);	
+	dmaCopy(ice_floorPal, &SH_BG_PALETTE[128], ice_floorPalLen);	
 	
 	
 	vram_obj.reserve(&portal_tiles, finish_portalTilesLen);
 	portal_tiles.write(finish_portalTiles, finish_portalTilesLen);
-	dmaCopy(finish_portalPal, &SPRITE_PALETTE[0x90], finish_portalPalLen);			
+	dmaCopy(finish_portalPal, &SH_SPRITE_PALETTE[0x90], finish_portalPalLen);			
 	
 	u16* dst = (u16*)portal_tiles.get_value();
 	for(int i=0;i<finish_portalTilesLen;i++)
@@ -131,7 +133,7 @@ void MapScene::init()
 	
 	vram_obj.reserve(&arrow_tiles, arrowTilesLen);
 	arrow_tiles.write(arrowTiles, arrowTilesLen);
-	dmaCopy(arrowPal, &SPRITE_PALETTE[0xD0], arrowPalLen);		
+	dmaCopy(arrowPal, &SH_SPRITE_PALETTE[0xD0], arrowPalLen);		
 	
 	
 	Ghost::loadVramData(vram_obj);
@@ -145,7 +147,7 @@ void MapScene::init()
 	
 	vram_obj.reserve(&digits_tiles, digitsTilesLen);
 	digits_tiles.write(digitsTiles, digitsTilesLen);
-	dmaCopy(digitsPal, &SPRITE_PALETTE[0xE0], digitsPalLen);
+	dmaCopy(digitsPal, &SH_SPRITE_PALETTE[0xE0], digitsPalLen);
 	
 	
 	if(!chillin)
@@ -173,9 +175,9 @@ void MapScene::init()
 		//bgGetTilesPtr(3)[32+i]=0x2222;
 	//}		
 		
-	BG_PALETTE[0] = Astralbrew::Drawing::Colors::White;
-	//BG_PALETTE[1] = Astralbrew::Drawing::Colors::Black;
-	//BG_PALETTE[2] = Astralbrew::Drawing::Colors::Blue		
+	SH_BG_PALETTE[0] = Astralbrew::Drawing::Colors::White;
+	//SH_BG_PALETTE[1] = Astralbrew::Drawing::Colors::Black;
+	//SH_BG_PALETTE[2] = Astralbrew::Drawing::Colors::Blue		
 	
 	objEnable1D();					
 	
@@ -218,6 +220,10 @@ void MapScene::init()
 		
 	mmInitDefault((mm_addr)soundbank_bin, 2);
 	mmStart(MOD_MAP_THEME, MM_PLAY_LOOP);	
+	
+	frame();
+
+	shpal_fade();
 }	
 
 void MapScene::before_frame()
@@ -595,6 +601,10 @@ MapScene::~MapScene()
 {	
 	mmPause();
 	mmStop();
+	
+	shpal_set_black();
+	shpal_fade();
+	
 	delete portal_updater;
 	delete finish_portal;
 	delete player;
@@ -607,4 +617,5 @@ MapScene::~MapScene()
 		delete digits[i];		
 	irqSet(IRQ_VBLANK, 0);	
 	OamPool::reset();	
+		
 }

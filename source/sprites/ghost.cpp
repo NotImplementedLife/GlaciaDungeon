@@ -3,6 +3,8 @@
 
 using namespace Astralbrew::Memory;
 
+#include "fader.h"
+
 Ghost::Ghost() : ChunkEntity(ObjSize::SIZE_32x32, ObjBitDepth::_4bit, 1, class_of(GHOST))
 {
 	crt_gfx = gfx_addr;
@@ -20,7 +22,7 @@ void Ghost::loadVramData(VramManager& allocator)
 {	
 	allocator.reserve(&gfx_addr, ghost_gfxTilesLen);
 	gfx_addr.write(ghost_gfxTiles, ghost_gfxTilesLen);	
-	dmaCopy(ghost_gfxPal, &SPRITE_PALETTE[0xF0], 32);
+	dmaCopy(ghost_gfxPal, &SH_SPRITE_PALETTE[0xF0], 32);
 }
 
 void Ghost::update()

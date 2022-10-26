@@ -30,6 +30,8 @@ void GBAJamScene::init()
 #include "menu_scene.hpp"
 #include "langs.h"
 
+#include "fader.h"
+
 void GBAJamScene::frame()
 {	
 	#ifdef GBAJAM
@@ -49,4 +51,10 @@ void GBAJamScene::frame()
 	#ifdef GBAJAM
 	}
 	#endif
+}
+
+GBAJamScene::~GBAJamScene()
+{
+	shpal_set_black();
+	shpal_fade();
 }

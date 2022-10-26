@@ -11,6 +11,7 @@
 #include "soundbank.h"
 #include "soundbank_bin.h"
 #include <maxmod.h>
+#include "fader.h"
 
 using namespace Astralbrew::Video;
 
@@ -66,7 +67,7 @@ void TitleScene::init()
 	bgUpdate();	
 	
 	dmaCopy(titleTiles, bgGetTilesPtr(2), titleTilesLen);
-	dmaCopy(titlePal, &BG_PALETTE[16], titlePalLen);
+	dmaCopy(titlePal, &SH_BG_PALETTE[16], titlePalLen);
 	for(int i=0;i<titleTilesLen/2;i++)
 	{
 		short x = bgGetTilesPtr(2)[i];
@@ -82,24 +83,33 @@ void TitleScene::init()
 	
 		
 	
-	dmaCopy(ice_floorPal, BG_PALETTE, (ice_floorPalLen+3)/4*4);
+	dmaCopy(ice_floorPal, SH_BG_PALETTE, (ice_floorPalLen+3)/4*4);
 	
 	
 	objEnable1D();
-	player = new Player();			
-	player->set_position(120,132);
-	player->update_position(nullptr);
-	player->set_movement_bounds(0,0,8000,8000);
+	player = new Player();
+	player->set_movement_bounds(0,0,8000,8000);	
 	
 	player->get_attribute()->set_rotation_scaling(true);
 	player->get_attribute()->set_affine_matrix(0);
 	OamPool::set_rotation_matrix(0, 256, 0, 0, 256);
+	
+	
+	player->set_position(120,132);	
+	player->update_position(nullptr);	
+	
+	player->update();
+	player->update_visual();	
+	
+	OamPool::deploy();
 	
 	irqSet(IRQ_VBLANK, mmVBlank);
 	irqEnable(IRQ_VBLANK);
 	
 	mmInitDefault((mm_addr)soundbank_bin, 4);
 	mmStart(MOD_TITLE_THEME, MM_PLAY_LOOP);
+	
+	shpal_fade();
 }
 	
 void TitleScene::before_frame()
@@ -176,4 +186,7 @@ TitleScene::~TitleScene()
 	irqSet(IRQ_VBLANK, 0);
 	delete player;	
 	//OamPool::reset();	
+	
+	shpal_set_black();
+	shpal_fade();
 }
