@@ -28,3 +28,8 @@ bool ChunkEntity::is_in_chunk(int chunk_x, int chunk_y) const
 
 ChunkEntity::ChunkEntity(ObjSize size, ObjBitDepth bit_depth, u16 frames_count, obj_class_t obj_class)
 	: Sprite(size, bit_depth, frames_count, obj_class) { }
+
+void ChunkEntity::update_position(Camera* camera)
+{
+	Sprite::update_position(camera);
+}

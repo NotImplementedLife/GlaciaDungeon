@@ -3,6 +3,7 @@
 
 using namespace Astralbrew::Entity;
 using namespace Astralbrew::Objects;
+using namespace Astralbrew::World;
 
 class ChunkEntity : public Sprite
 {
@@ -13,6 +14,8 @@ public:
 	int get_chunk() const;
 	void set_chunk(int chunk_id);
 	void set_chunk(int chunk_x, int chunk_y);
+	
+	virtual void update_position(Camera* camera);
 	
 	bool is_in_chunk(int chunk_id) const;
 	bool is_in_chunk(int chunk_x, int chunk_y) const;

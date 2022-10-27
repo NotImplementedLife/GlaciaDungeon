@@ -6,13 +6,12 @@ using namespace Astralbrew::Memory;
 #include "fader.h"
 
 Ghost::Ghost() : ChunkEntity(ObjSize::SIZE_32x32, ObjBitDepth::_4bit, 1, class_of(GHOST))
-{
+{	
 	crt_gfx = gfx_addr;
 	get_attribute()->set_palette_number(15);
 	get_visual()->set_frame(0, &crt_gfx);
 	get_visual()->set_crt_gfx(0);			
-	
-	set_hitbox(Hitbox(6,6,20,20));
+		
 	set_anchor(128,128);	
 }
 

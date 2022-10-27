@@ -96,14 +96,16 @@ void MapScene::init()
 	//consoleDemoInit();
 	
 	bgInit(2, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 5);
-	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 1, 6);
+	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 1, 6);	
 	
 	bgSetPriority(2, 3);
-	bgSetPriority(3, 2);
+	bgSetPriority(3, 1);
 	
 	bgSetMosaicSize(1,1);
 	bgMosaicEnable(1);
 	bgMosaicEnable(3);
+	
+	bgSetAlpha(0,8,2,8);
 	
 	Address transparentTile;
 	vram_chr_1.reserve(&transparentTile, 32);
@@ -185,6 +187,7 @@ void MapScene::init()
 	objEnable1D();					
 	
 	player = new Player();							
+	player->get_attribute()->set_priority(0);
 	
 	finish_portal = Sprite::quick256(&portal_tiles, ObjSize::SIZE_32x32, ANCHOR_CENTER);
 	finish_portal->update_visual();
@@ -373,18 +376,33 @@ void MapScene::frame()
 	int chk_y = viewer->get_scroll_y()/128;
 	for(int i=0;i<chunk_entities.size();i++) 
 	{				
-		int chk_id = chunk_entities[i]->get_chunk();
-		if(chk_id==-1) continue;
-		int e_x = chk_id & 0xFFFF;
-		int e_y = chk_id >> 16;		
-		if(abs(chk_x-e_x)>=2 || abs(chk_y-e_y)>=2)
-		{			
-			// entity no longer in chunk, remove it
-			ChunkEntity* entity = chunk_entities[i];			
-			chunk_entities.remove(entity);
-			delete entity;							
-			
-			chunk_provider.unregister_chunk(e_x, e_y);				
+		if(chunk_entities[i]->is_of_class($(FIREFLY)))
+		{
+			int dx = abs(player->get_px()-chunk_entities[i]->pos_x());
+			int dy = abs(player->get_py()-chunk_entities[i]->pos_y());
+			if(dx+dy>512)
+			{
+				ChunkEntity* entity = chunk_entities[i];			
+				chunk_entities.remove(entity);
+				delete entity;							
+				ff_cnt--;
+			}
+		}
+		else
+		{
+			int chk_id = chunk_entities[i]->get_chunk();
+			if(chk_id==-1) continue;
+			int e_x = chk_id & 0xFFFF;
+			int e_y = chk_id >> 16;		
+			if(abs(chk_x-e_x)>=2 || abs(chk_y-e_y)>=2)
+			{			
+				// entity no longer in chunk, remove it
+				ChunkEntity* entity = chunk_entities[i];			
+				chunk_entities.remove(entity);
+				delete entity;							
+				
+				chunk_provider.unregister_chunk(e_x, e_y);				
+			}	
 		}		
 	}
 	
@@ -421,32 +439,34 @@ void MapScene::frame()
 		}
 	}
 		
-	
-	if((rand()&0xFF)==47)
-	{		
-		if(ff_cnt<2)
-		{
-			Firefly* firefly = new Firefly();		
-			firefly->set_chunk(-1);
-			int rx = 150+(rand()&63);
-			int ry = 150+(rand()&63);
-			if(rand()&3) rx=-rx;
-			if(rand()&3) ry=-ry;
-			//firefly->set_position(player->get_px()+rx, player->get_py()+ry);			
-			firefly->set_position(player->get_px(), player->get_py());			
-			chunk_entities.push_back(firefly);			
-			ff_cnt++;			
-		}
+		
+	if(ff_cnt<2)
+	{
+		int px = player->get_px();
+		int py = player->get_py();
+		
+		int rx = 130+(rand()&31);
+		int ry = 90+(rand()&31);
+			
+		if(rand()&3) rx=-rx;
+		if(rand()&3) ry=-ry;			
+			
+		px+=rx, py+=ry;
+			
+		Firefly* firefly = new Firefly(px, py);		
+		firefly->set_chunk(-1);						
+		chunk_entities.push_back(firefly);			
+		ff_cnt++;			
 	}
 	
 	for(int i=0;i<chunk_entities.size();i++)
-	{
-		if(chunk_entities[i]->is_of_class(class_of(GHOST)))
-		{
+	{					
+		if(chunk_entities[i]->is_of_class($(GHOST)))
+		{						
 			((Ghost*)chunk_entities[i])->read_player_pos(player);
 			if(player_touches_ghost(chunk_entities[i]))
-			{
-				open_reports(2); 
+			{				
+				open_reports(2);
 			}
 		}
 		chunk_entities[i]->update();

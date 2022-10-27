@@ -42,7 +42,7 @@ LANGS_MAKE  := $(shell python $(ROOT_DIR)/tools/languages.py $(ROOT_DIR)/text/ $
 ARCH	:=	-mthumb -mthumb-interwork
 
 CFLAGS	:=	-g -Wall -O2\
-		-mcpu=arm7tdmi -mtune=arm7tdmi -gdwarf-4 -std=c++17\
+		-mcpu=arm7tdmi -mtune=arm7tdmi -gdwarf-4 -std=c++17 -DVERSION_DEBUG\
 		-D_DEFAULT_SOURCE \
 		$(ARCH)
 		

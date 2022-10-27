@@ -3,8 +3,7 @@
 #include "chunk_entity.hpp"
 #include "ghost_ai.hpp"
 #include "player.hpp"
-
-register_class(GHOST);
+#include "regs.hpp"
 
 class Ghost : public ChunkEntity
 {
