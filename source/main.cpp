@@ -8,6 +8,10 @@
 #include "gba_jam_scene.hpp"
 #include "map_select_scene.hpp"
 
+#include "soundbank_bin.h"
+#include "soundbank.h"
+#include <maxmod.h>
+
 using namespace Astralbrew::Scenes;
 
 class _SplashScreen : public Astralbrew::Scenes::DefaultSplashScreen 
@@ -20,7 +24,7 @@ class _SplashScreen : public Astralbrew::Scenes::DefaultSplashScreen
 };
 
 void Astralbrew::World::init_main_scene() 
-{
+{	
 	SAVE_FILE.load();
 	set_current_language(SAVE_FILE.data().language);
 	Astralbrew::World::__MAIN_SCENE__ = new _SplashScreen(); 		

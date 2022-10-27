@@ -648,8 +648,9 @@ void MapScene::open_reports(int code)
 
 MapScene::~MapScene() 
 {	
+	mmSetModuleVolume(0);
 	mmPause();
-	mmStop();
+	mmStop();	
 	
 	shpal_set_black();
 	shpal_fade();

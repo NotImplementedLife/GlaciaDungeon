@@ -17,12 +17,13 @@ int menu_master_sound_cnt = 0;
 
 void load_menu_master_sound()
 {
+	mmSetModuleVolume(1024);
 	if(menu_master_sound_cnt==0)
 	{
 		irqSet(IRQ_VBLANK, mmVBlank);
 		irqEnable(IRQ_VBLANK);	
 		mmInitDefault((mm_addr)soundbank_bin, 1);
-		mmStart(MOD_MENU_THEME, MM_PLAY_LOOP);
+		mmStart(MOD_MENU_THEME, MM_PLAY_LOOP);		
 	}
 	menu_master_sound_cnt = 1;
 }
@@ -124,7 +125,11 @@ void MenuScene::init()
 	bgUpdate();		
 	
 	load_menu_master_sound();
-	select(sel);
+	if(sel==0 && SAVE_FILE.data().current_level != -1)
+	{
+		select(1); // continue
+	}
+	else select(sel);	
 }
 
 void MenuScene::before_frame()
@@ -144,13 +149,14 @@ void MenuScene::on_selection_done(int index)
 			close()->next(new MapScene(&MAP_STATS[0])); break;
 		}
 		case 1: close()->next(new MapScene(&MAP_STATS[SAVE_FILE.data().current_level])); break;
-		case 2: close()->next(new MapSelectScene()); break;
+		case 2: mmSetModuleVolume(0); close()->next(new MapSelectScene()); break;
 		case 3: close()->next(new LanguageSelectScene()); break;
 	}	
 }
 
 void MenuScene::on_cancel_triggered() 
 {
+	mmSetModuleVolume(0);
 	mmPause();
 	mmStop();
 	close()->next(new TitleScene());

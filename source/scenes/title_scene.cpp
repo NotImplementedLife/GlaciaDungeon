@@ -181,6 +181,7 @@ void TitleScene::launch_map()
 
 TitleScene::~TitleScene()
 {
+	mmSetModuleVolume(0);
 	mmPause();
 	mmStop();
 	irqSet(IRQ_VBLANK, 0);
