@@ -27,14 +27,14 @@ Firefly::Firefly(short px, short py) : ChunkEntity(ObjSize::SIZE_16x16, ObjBitDe
 	glow->update_visual();	
 }
 
-#include <stdlib.h>
+#include "qrand.h"
 	
 void Firefly::update()
 {
-	if((rand()&3)==0)
+	if((qrand()&3)==0)
 	{		
-		int x = (rand()&0xF)-8;
-		int y = (rand()&0xF)-8;
+		int x = (qrand()&0xF)-8;
+		int y = (qrand()&0xF)-8;
 		vx += x<0 ? sf24(-1,x) : sf24(0,x);
 		if(vx<-sf24(0,128)) vx=-sf24(0,128); else if(vx>sf24(0,128)) vx=sf24(0,128);		
 		vy += y<0 ? sf24(-1,y) : sf24(0,y);

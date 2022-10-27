@@ -33,6 +33,7 @@ using namespace Astralbrew::Entity;
 #include "title_scene.hpp"
 
 #include "fader.h"
+#include "qrand.h"
 
 MosaicIncreaser::MosaicIncreaser() : ScheduledTask(5, 16) {}
 
@@ -171,6 +172,12 @@ void MapScene::init()
 		digits[5]->update_visual();
 		digits[5]->update_position(nullptr);		
 	}
+	else
+	{
+		for(int i=0;i<6;i++) digits[i]=nullptr;
+	}
+		
+		
 	
 	
 	
@@ -418,14 +425,14 @@ void MapScene::frame()
 			{				
 				if(chunk_provider.chunk_has_enemies(cx,cy))
 				{
-					int cnt = 1 + rand() % 3;
+					int cnt = 1 + qrand() % 3;
 					for(int i=0;i<cnt;i++)
 					{
 						Ghost* ghost = new Ghost();
 						ghost->set_chunk(chk_x+dx, chk_y+dy);
 						ghost->set_position((chk_x+dx)*128+64, (chk_y+dy)*128+64);
 						
-						int s = rand()%5;
+						int s = qrand()%5;
 						if(s<2)
 							ghost->attach_ai(new SquareAI());
 						else
@@ -445,11 +452,11 @@ void MapScene::frame()
 		int px = player->get_px();
 		int py = player->get_py();
 		
-		int rx = 130+(rand()&31);
-		int ry = 90+(rand()&31);
+		int rx = 130+(qrand()&31);
+		int ry = 90+(qrand()&31);
 			
-		if(rand()&3) rx=-rx;
-		if(rand()&3) ry=-ry;			
+		if(qrand()&3) rx=-rx;
+		if(qrand()&3) ry=-ry;			
 			
 		px+=rx, py+=ry;
 			

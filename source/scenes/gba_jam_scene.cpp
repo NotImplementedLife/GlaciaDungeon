@@ -21,6 +21,8 @@ void GBAJamScene::init()
 	dmaCopy(gba_jam_gridPal, &BG_PALETTE[16], gba_jam_gridPalLen);
 	dmaCopy(gba_jam_gridMap, bgGetMapPtr(1), gba_jam_gridMapLen);
 	
+	bgSetScroll(1,5,3);
+	
 	BG_PALETTE[0] = Drawing::Colors::White;
 	#endif
 }

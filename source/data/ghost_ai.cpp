@@ -1,5 +1,7 @@
 #include "ghost_ai.hpp"
 
+#include "qrand.h"
+
 GhostAI::GhostAI()
 {
 	
@@ -37,14 +39,14 @@ int GhostAI::get_y() const
 
 SquareAI::SquareAI() : GhostAI()
 {
-	len = 10+rand()%90;
+	len = 10+qrand()%90;
 }
 
 void SquareAI::set_chunk(int cx, int cy) 
 {
 	GhostAI::set_chunk(cx,cy);
-	gx = 9+this->cx+rand()%(110-len);
-	gy = 9+this->cy+rand()%(110-len);
+	gx = 9+this->cx+qrand()%(110-len);
+	gy = 9+this->cy+qrand()%(110-len);
 }
 
 void SquareAI::execute_step()
@@ -68,7 +70,7 @@ void SquareAI::execute_step()
 
 CircleAI::CircleAI() : GhostAI() 
 {
-	r = 30+rand()%32;	
+	r = 30+qrand()%32;	
 	t = 0;
 }
 
@@ -81,8 +83,8 @@ const s16* trig_table = (s16*)cos_sin;
 void CircleAI::set_chunk(int cx, int cy)
 {
 	GhostAI::set_chunk(cx,cy);
-	ox = r+this->cx+rand()%(128-2*r);
-	oy = r+this->cy+rand()%(128-2*r);
+	ox = r+this->cx+qrand()%(128-2*r);
+	oy = r+this->cy+qrand()%(128-2*r);
 }
 
 void CircleAI::execute_step()
