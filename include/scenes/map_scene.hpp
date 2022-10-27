@@ -67,6 +67,7 @@ private:
 	
 	bool chillin = false;
 	
+	int ff_cnt=0;	
 public:		
 	MapScene(const MapData* md = nullptr, bool chillin = false);	
 	void load_mapstat(const MapData* md);		

@@ -86,6 +86,7 @@ Player::Player() : Sprite(ObjSize::SIZE_64x64, ObjBitDepth::_8bit, 1, $(player))
 	
 	px = 120;
 	py = 80;	
+	update_visual();
 }
 
 void Player::set_movement_bounds(int x, int y, int w, int h)

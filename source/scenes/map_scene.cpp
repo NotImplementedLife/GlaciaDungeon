@@ -17,6 +17,7 @@ using namespace Astralbrew::Entity;
 #include "finish_portal.h"
 #include "arrow.h"
 
+#include "firefly.hpp"
 #include "ghost.hpp"
 #include "save_file.hpp"
 
@@ -137,6 +138,8 @@ void MapScene::init()
 	
 	
 	Ghost::loadVramData(vram_obj);
+	Firefly::loadVramData(vram_obj);
+	
 			
 	for(int i=0;i<1024;i++)
 	{
@@ -369,19 +372,20 @@ void MapScene::frame()
 	int chk_x = viewer->get_scroll_x()/128;
 	int chk_y = viewer->get_scroll_y()/128;
 	for(int i=0;i<chunk_entities.size();i++) 
-	{
+	{				
 		int chk_id = chunk_entities[i]->get_chunk();
+		if(chk_id==-1) continue;
 		int e_x = chk_id & 0xFFFF;
-		int e_y = chk_id >> 16;
+		int e_y = chk_id >> 16;		
 		if(abs(chk_x-e_x)>=2 || abs(chk_y-e_y)>=2)
-		{
+		{			
 			// entity no longer in chunk, remove it
 			ChunkEntity* entity = chunk_entities[i];			
 			chunk_entities.remove(entity);
-			delete entity;			
+			delete entity;							
 			
-			chunk_provider.unregister_chunk(e_x, e_y);
-		}
+			chunk_provider.unregister_chunk(e_x, e_y);				
+		}		
 	}
 	
 	for(int dy=-1;dy<=1;dy++)
@@ -414,6 +418,24 @@ void MapScene::frame()
 					}
 				}
 			}			
+		}
+	}
+		
+	
+	if((rand()&0xFF)==47)
+	{		
+		if(ff_cnt<2)
+		{
+			Firefly* firefly = new Firefly();		
+			firefly->set_chunk(-1);
+			int rx = 150+(rand()&63);
+			int ry = 150+(rand()&63);
+			if(rand()&3) rx=-rx;
+			if(rand()&3) ry=-ry;
+			//firefly->set_position(player->get_px()+rx, player->get_py()+ry);			
+			firefly->set_position(player->get_px(), player->get_py());			
+			chunk_entities.push_back(firefly);			
+			ff_cnt++;			
 		}
 	}
 	

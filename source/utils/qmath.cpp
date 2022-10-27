@@ -219,6 +219,7 @@ int norm_coords_sm(int x, int y)
 __attribute__((target("arm"), section(".iwram.qmath.norm_coords"))) 
 int norm_coords(int x, int y)
 {
+	return norm_coords_sm(x,y);
 	if(abs(x)<256 && abs(y)<256)
 		return norm_coords_sm(x,y);
 	int nx = (x<0 ? -x:x), ny = (y<0?-y:y);
