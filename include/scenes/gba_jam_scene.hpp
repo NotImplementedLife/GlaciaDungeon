@@ -1,6 +1,6 @@
 #pragma once
 
-#define GBAJAM
+//#define GBAJAM
 
 #include <Astralbrew>
 

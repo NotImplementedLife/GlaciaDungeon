@@ -96,8 +96,8 @@ void MapScene::init()
 	Video::setMode(0);		
 	//consoleDemoInit();
 	
-	bgInit(2, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 5);
-	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 1, 6);	
+	bgInit(2, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 3);
+	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 0, 4);
 	
 	bgSetPriority(2, 3);
 	bgSetPriority(3, 1);
@@ -108,11 +108,11 @@ void MapScene::init()
 	
 	bgSetAlpha(0,8,2,8);
 	
-	Address transparentTile;
-	vram_chr_1.reserve(&transparentTile, 32);
-	
-	vram_chr_1.reserve(&ice_tiles, ice_tilesTilesLen);
+	ice_tiles.set_value((void*)(0x06000000+32));
 	ice_tiles.write(ice_tilesTiles, ice_tilesTilesLen);
+	
+	Address transparentTile;
+	vram_chr_1.reserve(&transparentTile, 32);	
 			
 	dmaCopy(ice_tilesPal, SH_BG_PALETTE, (ice_tilesPalLen+3)/4*4);
 	
@@ -502,23 +502,25 @@ void MapScene::open_reports(int code)
 {
 	player->get_attribute()->set_x(-64);
 	OamPool::deploy();
-	bgInit(1, BgSize::Text256x512, BgPaletteType::Pal4bit, 0, 1);	
-	dmaCopy(end_level_screenTiles, (void*)0x06001800, end_level_screenTilesLen);
+	bgInit(1, BgSize::Text256x512, BgPaletteType::Pal4bit, 0, 1);
+	dmaCopy(end_level_screenTiles, (void*)0x06003000, end_level_screenTilesLen);
 	dmaCopy(end_level_screenMap, bgGetMapPtr(1), end_level_screenMapLen);
 	dmaCopy(end_level_screenPal, &BG_PALETTE[0x90], end_level_screenPalLen);
 	
-	short* buff = (short*)bgGetMapPtr(1);
-	for(int i=0;i<640;i++) buff[i]|=0x00C0;	
+	//while(1);
 	
-	if(code!=0) BG_PALETTE[0x92] = Colors::Red;
-	else BG_PALETTE[0x92] = Colors::Green;
+	short* buff = (short*)bgGetMapPtr(1);
+	for(int i=0;i<640;i++) buff[i]+=0x0180;
+	
+	if(code!=0) BG_PALETTE[0x93] = Colors::Red;
+	else BG_PALETTE[0x93] = Colors::Green;
 	
 	
 	bgSetScroll(1,0,-160);
 	bgSetScroll(0,0,-160);
 	bgUpdate();
 	
-	bgInit(0, BgSize::Text256x256, BgPaletteType::Pal4bit, 0, 7);
+	bgInit(0, BgSize::Text256x256, BgPaletteType::Pal4bit, 0, 5);
 	vwf.set_render_space((void*)0x06006480,10,22);
 	VwfEngine::prepare_map(vwf, bgGetMapPtr(0), 32, 4, 6, 0xA);
 	vwf.clear(BgPaletteType::Pal4bit);
@@ -544,11 +546,7 @@ void MapScene::open_reports(int code)
 		mmStop();
 		mmStart(MOD_LEVEL_COMPLETE_THEME, MM_PLAY_ONCE);
 		mmSetModuleTempo(1536);
-		vwf.put_text(get_message(LMSG_LEVEL_COMPLETE), Pal4bit, SolidColorBrush(0x1));		
-		if(chillin)
-		{
-			vwf.put_text(get_message(LMSG_NEXT_LEVEL_MSG), Pal4bit, SolidColorBrush(0x4));
-		}
+		vwf.put_text(get_message(LMSG_LEVEL_COMPLETE), Pal4bit, SolidColorBrush(0x1));				
 	}
 	
 	for(int i=0;i<40;i++)
@@ -559,9 +557,13 @@ void MapScene::open_reports(int code)
 		bgScroll(0,0,4);
 		bgUpdate();
 		if(i==10)
-		{
+		{			
 			if(code!=0)				
 				vwf.put_text(get_message(LMSG_GAME_OVER_OPTIONS), Pal4bit, SolidColorBrush(0x4));
+			else if(chillin)
+			{
+				vwf.put_text(get_message(LMSG_NEXT_LEVEL_MSG), Pal4bit, SolidColorBrush(0x4));
+			}
 		}
 	}				
 	
