@@ -15,32 +15,36 @@
 
 using namespace Astralbrew::Video;
 
-__attribute__((section(".ewram.title_parallax.scrolls"))) short scrolls[64];
-__attribute__((section(".ewram.title_parallax"))) short scrdir=1;
-__attribute__((section(".ewram.title_parallax"))) short pal0;
-
-void parallax()
-{	
-	if(REG_VCOUNT<31)
-	{
-		BG_PALETTE[0] = Astralbrew::Drawing::Colors::White;
-		REG_BG3HOFS = 0;
-	}		
-	else if(REG_VCOUNT<94)		
-	{
-		int c=(94-REG_VCOUNT)/2;
-		BG_PALETTE[0] = (31<<10)|(c<<5)|c;
-		REG_BG3HOFS = 0;
+namespace 
+{
+	__attribute__((section(".ewram.title_parallax.scrolls"))) short scrolls[64];
+	__attribute__((section(".ewram.title_parallax"))) short scrdir=1;
+	__attribute__((section(".ewram.title_parallax"))) short pal0;
+	
+	void parallax()
+	{	
+		if(REG_VCOUNT<31)
+		{
+			BG_PALETTE[0] = (25<<10)|(31<<5)|31;
+			REG_BG3HOFS = 0;
+		}		
+		else if(REG_VCOUNT<94)		
+		{
+			int c=(94-REG_VCOUNT)/2;
+			BG_PALETTE[0] = (25<<10)|(c<<5)|c;
+			REG_BG3HOFS = 0;
+		}
+		else if(REG_VCOUNT<159)
+		{
+			int i=REG_VCOUNT-95;
+			REG_BG3HOFS = scrolls[i];
+			if(scrdir==1)
+				scrolls[i]+=(i)/4+1;
+			else
+				scrolls[i]-=(i)/4+1;		
+		}
 	}
-	else if(REG_VCOUNT<159)
-	{
-		int i=REG_VCOUNT-95;
-		REG_BG3HOFS = scrolls[i];
-		if(scrdir==1)
-			scrolls[i]+=(i)/4+1;
-		else
-			scrolls[i]-=(i)/4+1;		
-	}
+	
 }
 
 void TitleScene::init()

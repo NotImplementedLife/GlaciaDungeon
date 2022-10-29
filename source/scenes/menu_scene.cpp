@@ -13,6 +13,38 @@
 using namespace Astralbrew::Video;
 #include "ice_floor.h"
 
+namespace 
+{
+	__attribute__((section(".ewram.menu_parallax.scrolls"))) short scrolls[64];
+	__attribute__((section(".ewram.menu__parallax"))) short scrdir=1;
+	__attribute__((section(".ewram.menu__parallax"))) short pal0;
+	
+	void parallax()
+	{	
+		if(REG_VCOUNT<16)
+		{
+			BG_PALETTE[0] = (25<<10)|(26<<5)|26;
+			REG_BG3HOFS = 0;
+		}		
+		else if(REG_VCOUNT<94)		
+		{
+			int c=(94-REG_VCOUNT)/3;
+			BG_PALETTE[0] = (25<<10)|(c<<5)|c;
+			REG_BG3HOFS = 0;
+		}
+		else if(REG_VCOUNT<159)
+		{
+			int i=REG_VCOUNT-95;
+			REG_BG3HOFS = scrolls[i];
+			if(scrdir==1)
+				scrolls[i]+=(i)/6+1;
+			else
+				scrolls[i]-=(i)/6+1;		
+		}
+	}
+}
+
+
 int menu_master_sound_cnt = 0;
 
 void load_menu_master_sound()
@@ -54,7 +86,7 @@ void LanguageSelectScene::init()
 	SimpleListScene::init();	
 	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 6);
 	
-	BG_PALETTE[0] = Astralbrew::Drawing::Colors::Blue;
+	BG_PALETTE[0] = 25<<10;
 	
 	dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, (ice_floorTilesLen-32)/2);
 	dmaCopy(ice_floorPal, &BG_PALETTE[16], (ice_floorPalLen+3)/4*4);
@@ -109,11 +141,12 @@ MenuScene::MenuScene(int sel) : SimpleListScene(), sel(sel)
 
 void MenuScene::init()
 {
+	for(int i=0;i<64;i++) scrolls[i]=0;
 	Utils::zeroize((void*)0x06000010, 0x18000-0x10); 
 	SimpleListScene::init();	
 	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 6);
 	
-	BG_PALETTE[0] = Astralbrew::Drawing::Colors::Blue;
+	BG_PALETTE[0] = 25<<10;
 	
 	dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, (ice_floorTilesLen-32)/2);
 	dmaCopy(ice_floorPal, &BG_PALETTE[16], (ice_floorPalLen+3)/4*4);
@@ -125,6 +158,8 @@ void MenuScene::init()
 	bgUpdate();		
 	
 	load_menu_master_sound();
+	irqEnable(IRQ_HBLANK);
+	irqSet(IRQ_HBLANK, parallax);
 	if(sel==0 && SAVE_FILE.data().current_level != -1)
 	{
 		select(1); // continue
@@ -140,6 +175,10 @@ void MenuScene::before_frame()
 void MenuScene::on_selection_done(int index)
 {	
 	if(index>=2) pass_down_sound = true;
+	if(index!=3) {
+		irqDisable(IRQ_HBLANK);
+		irqSet(IRQ_HBLANK, nullptr);
+	}
 	switch(index)
 	{
 		case 0: 
@@ -163,7 +202,7 @@ void MenuScene::on_cancel_triggered()
 }
 
 MenuScene::~MenuScene()
-{
+{	
 	if(!pass_down_sound)
-		unload_menu_master_sound();
+		unload_menu_master_sound();	
 }
