@@ -512,7 +512,7 @@ void MapScene::open_reports(int code)
 	short* buff = (short*)bgGetMapPtr(1);
 	for(int i=0;i<640;i++) buff[i]+=0x0180;
 	
-	if(code!=0) BG_PALETTE[0x93] = Colors::Red;
+	if(code!=0) BG_PALETTE[0x91] = Colors::Red;
 	else BG_PALETTE[0x93] = Colors::Green;
 	
 	

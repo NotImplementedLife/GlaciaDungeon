@@ -16,12 +16,11 @@ using namespace Astralbrew::Video;
 namespace 
 {
 	__attribute__((section(".ewram.menu_parallax.scrolls"))) short scrolls[64];
-	__attribute__((section(".ewram.menu__parallax"))) short scrdir=1;
-	__attribute__((section(".ewram.menu__parallax"))) short pal0;
+	__attribute__((section(".ewram.menu__parallax"))) short scrdir=1;	
 	
 	void parallax()
-	{	
-		if(REG_VCOUNT<16)
+	{			
+		if(REG_VCOUNT<16 || REG_VCOUNT == 160)
 		{
 			BG_PALETTE[0] = (25<<10)|(26<<5)|26;
 			REG_BG3HOFS = 0;
