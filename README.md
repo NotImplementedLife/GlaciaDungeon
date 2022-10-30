@@ -58,9 +58,9 @@ The code compiles with the latest version of devkitPro toolchains, and makes use
 ## Credits
 
 - [foopod](https://github.com/foopod) & [exelotl](https://github.com/exelotl) for the GBAJam2022 logo
-- GBAJam2022 organisers and the whole GBA and other retro consoles dev communities
+- [GBAJam2022](https://itch.io/jam/gbajam22) organisers and the whole GBA and other retro consoles dev communities
 - [ModArchive](modarchive.org) for the instruments I used in the soundtracks
-- libgba for the GBA development tools
+- [libgba](https://github.com/devkitPro/libgba) for the GBA development tools
 
 ## External links
 
