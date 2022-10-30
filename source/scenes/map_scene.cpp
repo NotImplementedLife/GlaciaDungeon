@@ -333,7 +333,10 @@ void MapScene::on_key_held(int keys)
 
 void MapScene::on_key_down(int keys)
 {		
-	if(keys & KEY_START) close()->next(new MapScene());
+	if(keys & KEY_START) {
+		open_reports(3);
+		//close()->next(new MapScene());
+	}
 }
 
 void MapScene::restart() {
@@ -512,8 +515,18 @@ void MapScene::open_reports(int code)
 	short* buff = (short*)bgGetMapPtr(1);
 	for(int i=0;i<640;i++) buff[i]+=0x0180;
 	
-	if(code!=0) BG_PALETTE[0x91] = Colors::Red;
-	else BG_PALETTE[0x93] = Colors::Green;
+	if(code==0)
+	{
+		BG_PALETTE[0x93] = Colors::Green;
+	}
+	else if(code<3)
+	{
+		BG_PALETTE[0x91] = Colors::Red;
+	}
+	else if(code==3)
+	{
+		BG_PALETTE[0x93] = Colors::Yellow;	
+	}
 	
 	
 	bgSetScroll(1,0,-160);
@@ -530,7 +543,14 @@ void MapScene::open_reports(int code)
 	BG_PALETTE[0xA3] = Colors::White;
 	BG_PALETTE[0xA4] = Colors::Yellow;
 	
-	if(code!=0)
+	if(code==0) 
+	{
+		mmStop();
+		mmStart(MOD_LEVEL_COMPLETE_THEME, MM_PLAY_ONCE);
+		mmSetModuleTempo(1536);
+		vwf.put_text(get_message(LMSG_LEVEL_COMPLETE), Pal4bit, SolidColorBrush(0x1));	
+	}	
+	else if(code<3)
 	{
 		mmStop();
 		mmStart(MOD_GAME_OVER_THEME, MM_PLAY_ONCE);		
@@ -539,15 +559,13 @@ void MapScene::open_reports(int code)
 		if(code==1)
 			vwf.put_text(get_message(LMSG_GAME_OVER_PLAYER_FALL), Pal4bit, SolidColorBrush(0x3));
 		else if(code==2)
-			vwf.put_text(get_message(LMSG_GAME_OVER_GHOST_ATK), Pal4bit, SolidColorBrush(0x3));		
+			vwf.put_text(get_message(LMSG_GAME_OVER_GHOST_ATK), Pal4bit, SolidColorBrush(0x3));				
 	}
-	else 
-	{		
-		mmStop();
-		mmStart(MOD_LEVEL_COMPLETE_THEME, MM_PLAY_ONCE);
-		mmSetModuleTempo(1536);
-		vwf.put_text(get_message(LMSG_LEVEL_COMPLETE), Pal4bit, SolidColorBrush(0x1));				
-	}
+	else if(code==3) 
+	{
+		vwf.put_text(get_message(LMSG_PAUSED), Pal4bit, SolidColorBrush(0x4));
+		vwf.put_text(get_message(LMSG_PAUSED_OPTIONS), Pal4bit, SolidColorBrush(0x4));
+	}	
 	
 	for(int i=0;i<40;i++)
 	{
@@ -557,13 +575,17 @@ void MapScene::open_reports(int code)
 		bgScroll(0,0,4);
 		bgUpdate();
 		if(i==10)
-		{			
-			if(code!=0)				
-				vwf.put_text(get_message(LMSG_GAME_OVER_OPTIONS), Pal4bit, SolidColorBrush(0x4));
-			else if(chillin)
+		{		
+			if(code==0)
 			{
-				vwf.put_text(get_message(LMSG_NEXT_LEVEL_MSG), Pal4bit, SolidColorBrush(0x4));
+				if(chillin)
+					vwf.put_text(get_message(LMSG_NEXT_LEVEL_MSG), Pal4bit, SolidColorBrush(0x4));
 			}
+			else if(code<3)				
+				vwf.put_text(get_message(LMSG_GAME_OVER_OPTIONS), Pal4bit, SolidColorBrush(0x4));
+			else if(code==3) 
+			{					
+			}			
 		}
 	}				
 	
@@ -586,6 +608,36 @@ void MapScene::open_reports(int code)
 		
 		scanKeys();
 		int keys = keysDown();
+		
+		if(code==3) {
+			if(keys & KEY_A) 
+			{
+				for(int i=0;i<40;i++)
+				{					
+					VBlankIntrWait();
+					mmFrame();
+					bgScroll(1,0,-4);
+					bgScroll(0,0,-4);
+					bgUpdate();		
+
+					if(i>=35) {
+						for(int j=0;j<32;j++)
+							bgGetMapPtr(0)[(12+(i-35))*32+j]=0;
+					}
+				}				
+				return;
+			}
+			else if(keys & KEY_B)
+			{
+				restart();
+			}
+			else if (keys & KEY_SELECT)
+			{
+				close()->next(new TitleScene());
+			}
+			
+			continue;
+		}
 		
 		if(code!=0)
 		{			
