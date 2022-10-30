@@ -20,6 +20,7 @@ const char* const CreditsScene::messages =
 	"Credits\0"
 	"Author : NotImplementedLife\0"
 	"Graphics : \n    Me\0"
+	"GBAJam2022 Logo :\n    foopod & exelotl\nBackground:\n    own variation of the\n    jam teaser cart\0"
 	"Code : \n    Also me\0"
 	"Instrument samples : \n    ModArchive\n    - only_lonely.mod\n    - p_and_n.mod    \n    - bjorn.mod    \n    - stor_och_liten.mod\0"
 	"Composition : \n    Original\n(that's why it sounds bad :3)\0"
@@ -158,11 +159,14 @@ void CreditsScene::frame()
 	{
 		if(*msgindex)
 		{		
-			vwf.clear(Pal4bit);
-			
-			bgSetScroll(0,strwidth(msgindex)*3-120,-32 - rand()%40);
+			bgSetScroll(0, 0, 96);
+			bgUpdate();
+	
+			vwf.clear(Pal4bit);			
 			
 			vwf.put_text(msgindex, Pal4bit, SolidColorBrush(0x4));
+			
+			bgSetScroll(0,strwidth(msgindex)*3-120,-32 - rand()%40);
 			
 			msgindex+=strlen(msgindex)+1;
 						
