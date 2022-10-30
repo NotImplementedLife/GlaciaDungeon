@@ -124,6 +124,22 @@ void MapSelectScene::on_key_down(int keys)
 			generate_map();
 		}			
 	}
+	else if(keys & KEY_R) 
+	{
+		if(index<MAP_STATS_COUNT-1)
+		{
+			index=MAP_STATS_COUNT-1;
+			generate_map();
+		}		
+	}
+	else if(keys & KEY_L) 
+	{
+		if(index>0)
+		{
+			index=0;
+			generate_map();
+		}		
+	}
 	else if(keys & (KEY_START | KEY_A))
 	{
 		irqDisable(IRQ_HBLANK);
@@ -180,6 +196,6 @@ MapSelectScene::~MapSelectScene()
 	delete a_select;
 	OamPool::reset();
 	Utils::zeroize((void*)0x06000000, 0x18000);	
-	irqDisable(IRQ_HBLANK);
+	irqDisable(IRQ_HBLANK);	
 	irqSet(IRQ_HBLANK, nullptr);
 }

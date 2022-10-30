@@ -51,7 +51,7 @@ void load_menu_master_sound()
 	mmSetModuleVolume(1024);
 	if(menu_master_sound_cnt==0)
 	{
-		irqSet(IRQ_VBLANK, mmVBlank);
+		irqSet(IRQ_VBLANK, mmVBlank);		
 		irqEnable(IRQ_VBLANK);	
 		mmInitDefault((mm_addr)soundbank_bin, 1);
 		mmStart(MOD_MENU_THEME, MM_PLAY_LOOP);		
@@ -126,6 +126,61 @@ void LanguageSelectScene::on_cancel_triggered()
 }
 
 LanguageSelectScene::~LanguageSelectScene()
+{	
+}
+
+
+#include "credits_scene.hpp"
+
+
+OptionsScene::OptionsScene()
+{
+	add_item(get_message(LMSG_MENU_LANGUAGE));	
+	add_item(get_message(LMSG_MENU_CREDITS));
+}
+
+void OptionsScene::init()
+{
+	Utils::zeroize((void*)0x06000010, 0x18000-0x10); 
+	SimpleListScene::init();	
+	bgInit(3, BgSize::Text256x256, BgPaletteType::Pal4bit, 2, 6);
+	
+	BG_PALETTE[0] = 25<<10;
+	
+	dmaCopy(((u8*)ice_floorTiles)+32, (int*)0x06008000, (ice_floorTilesLen-32)/2);
+	dmaCopy(ice_floorPal, &BG_PALETTE[16], (ice_floorPalLen+3)/4*4);
+	
+	for(int i=0;i<1024;i++) bgGetMapPtr(3)[i]=0x600;
+	dmaCopy(ice_floorMap, bgGetMapPtr(3), ice_floorMapLen/4);
+	for(int i=0;i<1024;i++) bgGetMapPtr(3)[i]|=0x1000;
+	bgSetScroll(3,0,140);
+	bgUpdate();
+	
+}
+
+void OptionsScene::on_selection_done(int index)
+{
+	if(index==0) 
+	{
+		close()->next(new LanguageSelectScene());
+	}			
+	else if(index==1)
+	{
+		close()->next(new CreditsScene(false));
+	}
+}
+
+void OptionsScene::on_cancel_triggered()
+{
+	close()->next(new MenuScene());				
+}
+
+void OptionsScene::before_frame() 
+{
+	mmFrame();		
+}
+
+OptionsScene::~OptionsScene()
 {
 	
 }
@@ -135,7 +190,7 @@ MenuScene::MenuScene(int sel) : SimpleListScene(), sel(sel)
 	add_item(get_message(LMSG_MENU_NEW_GAME));	
 	add_item(get_message(LMSG_MENU_CONTINUE), SAVE_FILE.data().current_level != -1);
 	add_item(get_message(LMSG_MENU_LEVEL_SEL));
-	add_item(get_message(LMSG_MENU_LANGUAGE));	
+	add_item(get_message(LMSG_MENU_OPTIONS));		
 }
 
 void MenuScene::init()
@@ -188,7 +243,7 @@ void MenuScene::on_selection_done(int index)
 		}
 		case 1: close()->next(new MapScene(&MAP_STATS[SAVE_FILE.data().current_level])); break;
 		case 2: mmSetModuleVolume(0); close()->next(new MapSelectScene()); break;
-		case 3: close()->next(new LanguageSelectScene()); break;
+		case 3: close()->next(new OptionsScene()); break;
 	}	
 }
 

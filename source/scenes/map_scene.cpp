@@ -31,6 +31,7 @@ using namespace Astralbrew::Entity;
 #include "soundbank.h"
 #include "soundbank_bin.h"
 #include "title_scene.hpp"
+#include "credits_scene.hpp"
 
 #include "fader.h"
 #include "qrand.h"
@@ -85,7 +86,7 @@ void MapScene::next_map()
 	bool chillin_bak = chillin;
 	if(i==MAP_STATS_COUNT-1)
 	{
-		close()->next(new TitleScene());
+		close()->next(new CreditsScene());
 	}		
 	close()->next(new MapScene(&MAP_STATS[i+1], chillin_bak));
 }
@@ -563,8 +564,7 @@ void MapScene::open_reports(int code)
 	}
 	else if(code==3) 
 	{
-		vwf.put_text(get_message(LMSG_PAUSED), Pal4bit, SolidColorBrush(0x4));
-		vwf.put_text(get_message(LMSG_PAUSED_OPTIONS), Pal4bit, SolidColorBrush(0x4));
+		vwf.put_text(get_message(LMSG_PAUSED), Pal4bit, SolidColorBrush(0x4));		
 	}	
 	
 	for(int i=0;i<40;i++)
@@ -584,8 +584,9 @@ void MapScene::open_reports(int code)
 			else if(code<3)				
 				vwf.put_text(get_message(LMSG_GAME_OVER_OPTIONS), Pal4bit, SolidColorBrush(0x4));
 			else if(code==3) 
-			{					
-			}			
+			{			
+				vwf.put_text(get_message(LMSG_PAUSED_OPTIONS), Pal4bit, SolidColorBrush(0x4));		
+			}						
 		}
 	}				
 	
@@ -625,14 +626,17 @@ void MapScene::open_reports(int code)
 							bgGetMapPtr(0)[(12+(i-35))*32+j]=0;
 					}
 				}				
+				vwf.clear(Pal4bit);
 				return;
 			}
 			else if(keys & KEY_B)
 			{
+				vwf.clear(Pal4bit);
 				restart();
 			}
 			else if (keys & KEY_SELECT)
 			{
+				vwf.clear(Pal4bit);
 				close()->next(new TitleScene());
 			}
 			
@@ -705,6 +709,8 @@ MapScene::~MapScene()
 	mmSetModuleVolume(0);
 	mmPause();
 	mmStop();	
+	VBlankIntrWait();
+	mmFrame();
 	
 	shpal_set_black();
 	shpal_fade();
